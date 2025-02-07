@@ -15,20 +15,27 @@ public class ProductController {
     //inject service
     private  final IProductService productService;
 
-
+    /**
+     * get all informations about products
+     * @return List<ProductDTO>
+     */
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public List<ProductDto> getAllProducts(){
         return  productService.getAll();
     }
 
+    /***
+     * create new product
+     * @param productDto
+     */
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public  void createProduct(@RequestBody ProductDto productDto){
-        productService.save(productDto);
+    public  void createProduct(@RequestBody ProductDto productDto,@RequestParam String category){
+        productService.saveProduct(category,productDto);
     }
 
-    @PutMapping()
+    @PutMapping("/{id}")
     public ProductDto update(@PathVariable Long id,@RequestBody ProductDto productDto){
         return  productService.update(id,productDto);
     }
@@ -37,5 +44,6 @@ public class ProductController {
     public void  delete(@PathVariable Long id){
         productService.delete(id);
     }
+
 
 }

@@ -6,11 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
+import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
-public class ImageDto {
+@Getter@Setter
+public class CategoryDto {
     private Long id;
-    private Product product;
+    private String name;
+    private List<Product> products;
 }
