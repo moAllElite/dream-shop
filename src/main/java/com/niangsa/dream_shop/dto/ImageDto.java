@@ -1,5 +1,6 @@
 package com.niangsa.dream_shop.dto;
 
+import com.niangsa.dream_shop.entities.Product;
 import lombok.*;
 
 import java.sql.Blob;
@@ -13,4 +14,5 @@ public class ImageDto {
     private Blob image;
     private String fileType;
     private String downloadUrl;
+    private ProductDto productDto;
 }

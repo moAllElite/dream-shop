@@ -82,7 +82,7 @@ public class ImageServiceImpl implements IImageService {
                 Image savedImage = imageRepository.save(image);
                 images.add(savedImage);
                 product.setImages(images);
-               productService.update(idProduct,productMapper.toProductDto(product));
+                productService.update(idProduct,productMapper.toProductDto(product));
                 imageDtos.add(imageMapper.toImagedDto(savedImage));
             } catch (SQLException | IOException e)  {
                 throw new RuntimeException(e);
