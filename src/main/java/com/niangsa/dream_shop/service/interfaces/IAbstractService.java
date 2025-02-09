@@ -1,4 +1,4 @@
-package com.niangsa.dream_shop.service;
+package com.niangsa.dream_shop.service.interfaces;
 
 import java.util.List;
 

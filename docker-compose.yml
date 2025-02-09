@@ -1,6 +1,6 @@
 services:
   postgres :
-    container_name: postgres-dream-shop
+    container_name: postgres_shop
     image:
       postgres:15
     restart: always
@@ -12,8 +12,8 @@ services:
     volumes:
       - data:/var/lib/postgresql/data
 
-  pg-admin:
-    container_name: pgadmin-dream-shop
+  pg-admin_shop:
+    container_name: pgadmin_shop
     image: dpage/pgadmin4
     restart: always
     environment:
@@ -22,5 +22,7 @@ services:
       - PGADMIN_LISTEN_PORT=5050
     ports:
       - "5050:5050"
+
 volumes:
   data:
+

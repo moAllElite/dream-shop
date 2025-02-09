@@ -2,12 +2,15 @@ spring:
   application:
     name : dream-shop
   jpa:
-    database: postgres
-    password : passer@123
-    generate-ddl : true
+    database: postgresql
     hibernate:
-      ddl-auto: true
+      ddl-auto: update
+    show-sql: true
   datasource:
-    driver:
-      class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
+    password: passer123
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+server:
+  servlet:
+    context-path: '/api/v1'

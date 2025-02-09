@@ -1,15 +1,13 @@
 package com.niangsa.dream_shop.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -22,8 +20,9 @@ public class Product {
     private String brand;
     private String description;
     private BigDecimal price;
-    private String invetory;
-    @ManyToOne()
+    private String inventory;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id")
     private Category category;
     @OneToMany(mappedBy = "product",orphanRemoval = true,cascade = CascadeType.ALL)
     private List<Image> images;

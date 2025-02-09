@@ -18,11 +18,11 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
     private String fileName;
-    private String filePath;
+    private String fileType;
     @Lob
-    private Blob blob;
+    private Blob image;
     private String downloadUrl;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne( )
     @JoinColumn(name = "product_id")
     private Product product;
 }

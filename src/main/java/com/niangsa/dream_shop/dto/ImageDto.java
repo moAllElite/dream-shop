@@ -1,16 +1,16 @@
 package com.niangsa.dream_shop.dto;
 
-import com.niangsa.dream_shop.entities.Product;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.sql.Blob;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class ImageDto {
     private Long id;
-    private Product product;
+    private String fileName;
+    private Blob image;
+    private String fileType;
+    private String downloadUrl;
 }
