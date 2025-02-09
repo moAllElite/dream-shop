@@ -67,9 +67,9 @@ public class ImageServiceImpl implements IImageService {
     public List<ImageDto> saveImages(List<MultipartFile> files, Long idProduct) {
         List<ImageDto> imageDtos = new ArrayList<>();
         Product product = productMapper.toProductEntity(productService.getById(idProduct));
-        List<Image> images = new ArrayList<>();
         for (MultipartFile file: files){
             try {
+                List<Image> images = new ArrayList<>();
                 Image image = new Image();
                 image.setImage(new SerialBlob(file.getBytes()));
                 image.setFileType(file.getContentType());
@@ -78,7 +78,7 @@ public class ImageServiceImpl implements IImageService {
                 String downloadUrl = downloadPath + UUID.randomUUID();
                 image.setDownloadUrl(downloadUrl);
                 System.out.println(image.getDownloadUrl());
-                image.setProduct(product);
+                image.setProduct(productMapper.toProductEntity(productService.getById(idProduct)));
                 Image savedImage = imageRepository.save(image);
                 images.add(savedImage);
                 product.setImages(images);

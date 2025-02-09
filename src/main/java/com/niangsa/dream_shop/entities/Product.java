@@ -21,9 +21,9 @@ public class Product {
     private String description;
     private BigDecimal price;
     private String inventory;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "category_id")
     private Category category;
-    @OneToMany(mappedBy = "product",orphanRemoval = true,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product")
     private List<Image> images;
 }

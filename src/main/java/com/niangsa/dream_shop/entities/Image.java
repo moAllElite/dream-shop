@@ -22,7 +22,7 @@ public class Image {
     @Lob
     private Blob image;
     private String downloadUrl;
-    @ManyToOne( fetch = FetchType.LAZY)
+    @ManyToOne(  )
     @JoinColumn(name = "product_id")
     private Product product;
 }
