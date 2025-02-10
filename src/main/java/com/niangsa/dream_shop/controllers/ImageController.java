@@ -52,7 +52,7 @@ public class ImageController {
     @GetMapping("/image/download/{idImage}")
     public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable Long idImage) throws SQLException {
         ImageDto image = imageService.getImageById(idImage);
-        ByteArrayResource resource = new ByteArrayResource(image.getImage().getBytes(1, (int) image.getImage().length()));
+        ByteArrayResource resource = new ByteArrayResource(image.getImages().getBytes(1, (int) image.getImages().length()));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(image.getFileType()))
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,

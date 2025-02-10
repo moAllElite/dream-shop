@@ -10,7 +10,7 @@ import java.sql.Blob;
 public class ImageDto {
     private Long id;
     private String fileName;
-    private Blob image;
+    private Blob images;
     private String fileType;
     private String downloadUrl;
 }

@@ -1,9 +1,7 @@
 package com.niangsa.dream_shop.dto;
 
 import com.niangsa.dream_shop.entities.Category;
-import com.niangsa.dream_shop.entities.Image;
 import lombok.*;
-import java.util.List;
 import java.math.BigDecimal;
 @Setter
 @Getter
@@ -18,5 +16,4 @@ public class ProductDto {
   //  @NotNull(message = "La marque est obligatoire")
     private String brand;
     private Category category;
-    private List<Image> images;
 }

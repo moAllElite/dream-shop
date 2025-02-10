@@ -4,12 +4,12 @@ spring:
   jpa:
     database: mysql
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     show-sql: true
   datasource:
-    url: jdbc:mysql://localhost:5432/dream-shp
+    url: jdbc:mysql://localhost:5432/adminapp-db
     password: user123
-    driver-class-name: org.mysql.Driver
+
     username: user
 server:
   servlet:
