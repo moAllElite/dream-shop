@@ -29,14 +29,13 @@ public class ImageServiceImpl implements IImageService {
     private final ProductMapper productMapper;
     private static final String DOWNLOAD_PATH = "/api/v1/images/image/download/";
     /**
-     *
      * @param id long
      * @return image
      */
     @Override
-    public ImageDto getImageById(Long id) {
+    public Image getImageById(Long id) {
         return imageRepository.findById(id)
-                .map(imageMapper::toImagedDto)
+                //.map(imageMapper::toImagedDto)
                 .orElseThrow(()-> new ApiRequestException("Image not found provided id:"+ id));
     }
 
@@ -97,7 +96,7 @@ public class ImageServiceImpl implements IImageService {
 
     @Override
     public void updateImage(MultipartFile file, Long id) {
-        Image image = imageMapper.toImageEntity(getImageById(id));
+        Image image = getImageById(id);
         image.setFileName(file.getOriginalFilename());
         try {
             image.setImages(new SerialBlob(file.getBytes()));

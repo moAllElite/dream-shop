@@ -2,6 +2,7 @@ package com.niangsa.dream_shop.controllers;
 
 
 import com.niangsa.dream_shop.dto.ImageDto;
+import com.niangsa.dream_shop.entities.Image;
 import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.interfaces.IImageService;
 import lombok.AllArgsConstructor;
@@ -51,8 +52,9 @@ public class ImageController {
      */
     @GetMapping("/image/download/{idImage}")
     public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable Long idImage) throws SQLException {
-        ImageDto image = imageService.getImageById(idImage);
-        ByteArrayResource resource = new ByteArrayResource(image.getImages().getBytes(1, (int) image.getImages().length()));
+        Image image = imageService.getImageById(idImage);
+
+        ByteArrayResource resource = new ByteArrayResource(image.getImages().getBytes(1,(int)  image.getImages().length()));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(image.getFileType()))
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
@@ -69,8 +71,8 @@ public class ImageController {
     @PutMapping("/image/{idImage}/update")
     public ResponseEntity<ApiResponse> updateImage(@PathVariable Long idImage, @RequestBody MultipartFile file) {
         try {
-            ImageDto imageDto = imageService.getImageById(idImage);
-            if (imageDto != null) {
+            Image image = imageService.getImageById(idImage);
+            if (image != null) {
                 imageService.updateImage(file, idImage);
                 return ResponseEntity.ok(new ApiResponse("Update successfull", null));
             }
@@ -88,8 +90,8 @@ public class ImageController {
     @DeleteMapping("/image/{idImage}/delete")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long idImage) {
         try {
-            ImageDto imageDto = imageService.getImageById(idImage);
-            if (imageDto != null) {
+            Image image = imageService.getImageById(idImage);
+            if (image != null) {
                 imageService.deleteImage(idImage);
                 return  ResponseEntity.ok(new ApiResponse("Successfully deleted", null));
             }
