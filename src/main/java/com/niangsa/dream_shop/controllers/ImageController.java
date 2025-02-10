@@ -6,7 +6,6 @@ import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.interfaces.IImageService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,11 +50,9 @@ public class ImageController {
      * @throws SQLException on error
      */
     @GetMapping("/image/download/{idImage}")
-    public ResponseEntity<Resource> downloadImage(@PathVariable Long idImage) throws SQLException {
+    public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable Long idImage) throws SQLException {
         ImageDto image = imageService.getImageById(idImage);
-        //ByteArrayResource resource = new ByteArrayResource(image.getImage().getBytes(1, (int) image.getImage().length()));
-        Resource resource = new ByteArrayResource(image.getImage().getBytes(1, (int) image.getImage().length()));
-
+        ByteArrayResource resource = new ByteArrayResource(image.getImage().getBytes(1, (int) image.getImage().length()));
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(image.getFileType()))
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,

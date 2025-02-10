@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +27,7 @@ public class ImageServiceImpl implements IImageService {
     private final ImageMapper imageMapper;
     private final IProductService productService;
     private final ProductMapper productMapper;
+    private static final String DOWNLOAD_PATH = "/api/v1/images/image/download/";
     /**
      *
      * @param id long
@@ -71,21 +70,20 @@ public class ImageServiceImpl implements IImageService {
             try {
                 List<Image> images = new ArrayList<>();
                 Image image = new Image();
-                image.setImage(new SerialBlob(file.getBytes()));
+                image.setProduct(product);
+                image.setImages(new SerialBlob(file.getBytes()));
                 image.setFileType(file.getContentType());
                 image.setFileName(file.getOriginalFilename());
-                String downloadPath ="/api/v1/images/image/download";
-                String downloadUrl = downloadPath + UUID.randomUUID();
-                image.setDownloadUrl(downloadUrl);
-                System.out.println(image.getDownloadUrl());
-                image.setProduct(productMapper.toProductEntity(productService.getById(idProduct)));
+
                 Image savedImage = imageRepository.save(image);
-                images.add(savedImage);
+                String downloadUrl = DOWNLOAD_PATH + savedImage.getId();
+                image.setDownloadUrl(downloadUrl);
+
+               images.add(savedImage);
                 product.setImages(images);
-                productService.update(idProduct,productMapper.toProductDto(product));
                 imageDtos.add(imageMapper.toImagedDto(savedImage));
             } catch (SQLException | IOException e)  {
-                throw new RuntimeException(e);
+                throw new ApiRequestException(e.getMessage());
             }
         }
         return imageDtos;
@@ -102,10 +100,10 @@ public class ImageServiceImpl implements IImageService {
         Image image = imageMapper.toImageEntity(getImageById(id));
         image.setFileName(file.getOriginalFilename());
         try {
-            image.setImage(new SerialBlob(file.getBytes()));
+            image.setImages(new SerialBlob(file.getBytes()));
             imageRepository.save(image);
         } catch (IOException | SQLException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new ApiRequestException(e.getMessage());
         }
     }
 }

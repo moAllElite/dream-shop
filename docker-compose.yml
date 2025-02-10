@@ -1,28 +1,37 @@
 services:
-  postgres :
-    container_name: postgres_shop
-    image:
-      postgres:15
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=passer123
-    ports:
-      - '5432:5432'
-    volumes:
-      - data:/var/lib/postgresql/data
 
-  pg-admin_shop:
-    container_name: pgadmin_shop
-    image: dpage/pgadmin4
-    restart: always
+  mysql-admin-db:
+    image: mysql:8.0
+    container_name: container_mysql-admin-db
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@email.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-      - PGADMIN_LISTEN_PORT=5050
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: adminapp-db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user123
     ports:
-      - "5050:5050"
+      - "3306:3306"
+    volumes:
+      - admin_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+
+
+  phpmyadmin-admin-db:
+    container_name: container_phpmyadmin-admindb
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - "8085:80"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      PMA_HOST: mysql-admin-db
+      PMA_USER: user
+      PMA_PASSWORD: user123
+    depends_on:
+      - mysql-admin-db
+    restart: unless-stopped
+
+
 
 volumes:
-  data:
-
+  admin_mysql_data:
+    driver: local

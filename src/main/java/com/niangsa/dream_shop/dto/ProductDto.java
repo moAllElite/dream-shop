@@ -1,7 +1,7 @@
 package com.niangsa.dream_shop.dto;
 
 import com.niangsa.dream_shop.entities.Category;
-import jakarta.validation.constraints.NotNull;
+import com.niangsa.dream_shop.entities.Image;
 import lombok.*;
 import java.util.List;
 import java.math.BigDecimal;
@@ -13,10 +13,10 @@ public class ProductDto {
     private String name;
     private String description;
     private BigDecimal price;
-    @NotNull(message = "L'inventory est obligatoire")
+   // @NotNull(message = "L'inventory est obligatoire")
     private String inventory;
-    @NotNull(message = "La marque est obligatoire")
+  //  @NotNull(message = "La marque est obligatoire")
     private String brand;
     private Category category;
-    private List<ImageDto> images;
+    private List<Image> images;
 }
