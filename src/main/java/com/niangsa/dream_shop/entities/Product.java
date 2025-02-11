@@ -26,4 +26,6 @@ public class Product {
     private Category category;
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Image> images;
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<CartItem> cartItems;
 }

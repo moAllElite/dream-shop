@@ -77,8 +77,7 @@ public class ImageServiceImpl implements IImageService {
                 Image savedImage = imageRepository.save(image);
                 String downloadUrl = DOWNLOAD_PATH + savedImage.getId();
                 image.setDownloadUrl(downloadUrl);
-
-               images.add(savedImage);
+                images.add(savedImage);
                 product.setImages(images);
                 imageDtos.add(imageMapper.toImagedDto(savedImage));
             } catch (SQLException | IOException e)  {
