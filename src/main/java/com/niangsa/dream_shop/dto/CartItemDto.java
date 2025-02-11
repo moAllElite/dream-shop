@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItemDto {
