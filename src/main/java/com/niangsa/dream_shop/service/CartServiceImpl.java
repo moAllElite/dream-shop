@@ -1,15 +1,18 @@
 package com.niangsa.dream_shop.service;
 
 import com.niangsa.dream_shop.dto.CartDto;
+import com.niangsa.dream_shop.dto.CartItemDto;
+import com.niangsa.dream_shop.entities.Cart;
+import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CartMapper;
 import com.niangsa.dream_shop.repository.CartItemRepository;
 import com.niangsa.dream_shop.repository.CartRepository;
 import com.niangsa.dream_shop.service.interfaces.ICartService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+
 @RequiredArgsConstructor
 @Service
 public class CartServiceImpl implements ICartService {
@@ -23,30 +26,39 @@ public class CartServiceImpl implements ICartService {
      */
     @Override
     public CartDto getCart(Long id) {
-        return null;
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(()-> new ApiRequestException("No cart were found id"+id));
+        BigDecimal totalAmount = cart.getTotalAmount();
+        cart.setTotalAmount(totalAmount);
+        return cartMapper.toCartDto(cartRepository.save(cart));
     }
 
     /**
+     * drop cart
      * @param id cart
      */
     @Override
     public void clearCart(Long id) {
         //1- Get cart info
-        CartDto cartDto = cartRepository.findById(id)
-                .map(cartMapper::toCartDto)
-                .orElseThrow(()-> new EntityNotFoundException("No Cart were found on cart"));
-        // clear cart item info
-        cartDto.getCartItems().clear();
+        CartDto cartDto = getCart(id);
+        // clear cart that contain items info
+        cartDto.getItems().clear();
         cartItemRepository.deleteAllById(id);
         cartRepository.deleteById(id);
     }
 
     /**
-     * @param id
-     * @return
+     * @param id cart long
+     * @return total price = addition of each total price of cart item
      */
     @Override
     public BigDecimal getTotalPrice(Long id) {
-        return null;
+        CartDto cartDto = cartRepository.findById(id).map(cartMapper::toCartDto)
+                .orElseThrow(()-> new ApiRequestException("No cart was found id:" + id));
+        return cartDto.getItems().stream()
+                .map(CartItemDto::getTotalPrice)
+                .reduce(BigDecimal.ZERO,BigDecimal::add);
     }
+
+
 }
