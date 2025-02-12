@@ -5,25 +5,25 @@ import com.niangsa.dream_shop.dto.CartItemDto;
 import com.niangsa.dream_shop.dto.ProductDto;
 import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.CartItem;
-import com.niangsa.dream_shop.entities.Product;
+import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CartItemMapper;
 import com.niangsa.dream_shop.mappers.CartMapper;
-import com.niangsa.dream_shop.mappers.ProductMapper;
 import com.niangsa.dream_shop.repository.CartItemRepository;
 import com.niangsa.dream_shop.repository.CartRepository;
-import com.niangsa.dream_shop.service.interfaces.ICartItem;
+import com.niangsa.dream_shop.service.interfaces.ICartItemService;
 import com.niangsa.dream_shop.service.interfaces.ICartService;
 import com.niangsa.dream_shop.service.interfaces.IProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @Service
-public class CartItemImpl implements ICartItem {
+public class CartItemServiceImpl implements ICartItemService {
     private final CartItemRepository cartItemRepository;
     private final ICartService cartService;
     private final CartItemMapper cartItemMapper;
-    private final ProductMapper productMapper;
     private final CartMapper cartMapper;
     private final CartRepository cartRepository;
     private final IProductService productService;
@@ -63,12 +63,16 @@ public class CartItemImpl implements ICartItem {
     }
 
     /**
+     * Remove cart item to the cart
      * @param cartId long
      * @param productId long
      */
     @Override
     public void removeItemToCart(Long cartId, Long productId) {
-
+        CartDto cartDto = cartService.getCart(cartId); //get the current cart
+        CartItem cartItem = getCartItem(cartId, productId);//get cart's item
+       Cart cart = cartMapper.toCartEntity(cartDto);// convert to Entity
+       cart.removeItem(cartItem); //drop item from cart
     }
 
     /**
@@ -78,6 +82,38 @@ public class CartItemImpl implements ICartItem {
      */
     @Override
     public void updateItemToCart(Long cartId, Long productId, int quantity) {
+        //get the current cart
+        CartDto cartDto = cartService.getCart(cartId);
+        Cart cart = cartMapper.toCartEntity(cartDto);
+        //update quantity from form
+         cart.getItems().stream()
+                 .filter(item -> item.getProduct().getId().equals(productId))
+                 .findFirst()
+                 .ifPresentOrElse(
+                          item -> {
+                              item.setQuantity(quantity);
+                              item.setUnitPrice(productService.getById(productId).getPrice());
+                              item.setTotalPrice();
+                          },
+                         ()-> { throw new ApiRequestException("product not found"); }
+                 );
+            //get calculed totalamount after update quantity
+            BigDecimal totalAmount = cart.getTotalAmount();
+            //assign
+            cart.setTotalAmount(totalAmount);
+            //save cart
+            cartRepository.save(cart);
+    }
 
+    //get cart's item according to  product id & cart id
+    @Override
+    public CartItem getCartItem(Long cartId, Long productId) {
+        CartDto cartDto = cartService.getCart(cartId);
+        return cartDto.getItems()
+                .stream()
+                .filter(item-> item.getProduct().getId().equals(productId))
+                .map(cartItemMapper::toCartItemEntity)
+                .findFirst()
+                .orElseThrow(()-> new ApiRequestException("item  not found"));
     }
 }

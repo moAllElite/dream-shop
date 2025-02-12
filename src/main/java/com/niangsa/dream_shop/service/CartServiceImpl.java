@@ -34,27 +34,26 @@ public class CartServiceImpl implements ICartService {
     }
 
     /**
-     * drop cart
+     * drop cart content & remove all cart item related to the cart
      * @param id cart
      */
     @Override
     public void clearCart(Long id) {
         //1- Get cart info
         CartDto cartDto = getCart(id);
-        // clear cart that contain items info
+        // clear cart that contain cart items info
         cartDto.getItems().clear();
-        cartItemRepository.deleteAllById(id);
-        cartRepository.deleteById(id);
+        cartItemRepository.deleteAllByCartId(id);
+        cartRepository.deleteById(id); //drop the current cart
     }
 
     /**
      * @param id cart long
-     * @return total price = addition of each total price of cart item
+     * @return total price = sum of each total price of cart item
      */
     @Override
     public BigDecimal getTotalPrice(Long id) {
-        CartDto cartDto = cartRepository.findById(id).map(cartMapper::toCartDto)
-                .orElseThrow(()-> new ApiRequestException("No cart was found id:" + id));
+        CartDto cartDto =  getCart(id);
         return cartDto.getItems().stream()
                 .map(CartItemDto::getTotalPrice)
                 .reduce(BigDecimal.ZERO,BigDecimal::add);
