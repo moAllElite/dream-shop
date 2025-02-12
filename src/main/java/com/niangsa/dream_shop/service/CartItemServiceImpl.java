@@ -2,12 +2,13 @@ package com.niangsa.dream_shop.service;
 
 import com.niangsa.dream_shop.dto.CartDto;
 import com.niangsa.dream_shop.dto.CartItemDto;
-import com.niangsa.dream_shop.dto.ProductDto;
 import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.CartItem;
+import com.niangsa.dream_shop.entities.Product;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CartItemMapper;
 import com.niangsa.dream_shop.mappers.CartMapper;
+import com.niangsa.dream_shop.mappers.ProductMapper;
 import com.niangsa.dream_shop.repository.CartItemRepository;
 import com.niangsa.dream_shop.repository.CartRepository;
 import com.niangsa.dream_shop.service.interfaces.ICartItemService;
@@ -15,8 +16,6 @@ import com.niangsa.dream_shop.service.interfaces.ICartService;
 import com.niangsa.dream_shop.service.interfaces.IProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -27,6 +26,7 @@ public class CartItemServiceImpl implements ICartItemService {
     private final ICartService cartService;
     private final CartItemMapper cartItemMapper;
     private final CartMapper cartMapper;
+    private final ProductMapper productMapper;
     private final CartRepository cartRepository;
     private final IProductService productService;
     /**
@@ -41,25 +41,28 @@ public class CartItemServiceImpl implements ICartItemService {
      */
     @Override
     public void addItemToCart(Long cartId, Long productId, int quantity) {
-        CartDto cartDto = cartService.getCart(cartId);
-        ProductDto productDto = productService.getById(productId);
-        CartItemDto cartItemDto = cartDto.getItems()
-                .stream()
-                .filter(item -> item.getProduct().getId().equals(productId))
-                .findFirst().orElse(new CartItemDto());
-
-        if(cartItemDto.getId() == null){
-            cartItemDto.setCart(cartDto);
-            cartItemDto.setProduct(productDto);
-            cartItemDto.setQuantity(quantity);
-            cartItemDto.setUnitPrice(productDto.getPrice());
-        } else {
-            cartItemDto.setQuantity(quantity + cartItemDto.getQuantity() );
+        if(cartId == null){
+            cartId = cartService.initializeCart();
         }
 
-        CartItem cartItem =  cartItemMapper.toCartItemEntity(cartItemDto); // convert from dto to entity
+        Cart cart = cartMapper.toCartEntity(cartService.getCart(cartId));
+        Product product =productMapper.toProductEntity( productService.getById(productId));
+        CartItem cartItem = cart.getItems()
+                .stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst().orElse(new CartItem());
+
+        if(cartItem.getId() == null){
+            cartItem.setCart(cart);
+            cartItem.setProduct(product);
+            cartItem.setQuantity(quantity);
+            cartItem.setUnitPrice(product.getPrice());
+        } else {
+            cartItem.setQuantity(quantity + cartItem.getQuantity() );
+        }
+
+
         cartItem.setTotalPrice();//update the total price which is equal to qte * unit price
-        Cart cart = cartMapper.toCartEntity(cartDto);// convert from dto to entity
         cart.addItem(cartItem);
         cartItemRepository.save(cartItem); // persist on db
         cartRepository.save(cart);// persist on db
@@ -73,7 +76,7 @@ public class CartItemServiceImpl implements ICartItemService {
     @Override
     public void removeItemToCart(Long cartId, Long productId) {
         CartDto cartDto = cartService.getCart(cartId); //get the current cart
-        CartItem cartItem = cartItemMapper.toCartItemEntity(getCartItem(cartId, productId));//get cart's item
+        CartItem cartItem =  cartItemMapper.toCartItemEntity(getCartItem(cartId, productId));//get cart's item
        Cart cart = cartMapper.toCartEntity(cartDto);// convert to Entity
        cart.removeItem(cartItem); //drop item from cart
     }

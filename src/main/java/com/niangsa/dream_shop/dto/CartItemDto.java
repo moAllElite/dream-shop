@@ -1,6 +1,8 @@
 package com.niangsa.dream_shop.dto;
 
 
+import com.niangsa.dream_shop.entities.Cart;
+import com.niangsa.dream_shop.entities.Product;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +20,6 @@ public class CartItemDto {
     private int quantity;
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;
-    private CartDto cart;
-    private ProductDto product;
+    private Cart cart;
+    private Product product;
 }

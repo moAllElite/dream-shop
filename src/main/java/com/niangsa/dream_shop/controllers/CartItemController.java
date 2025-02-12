@@ -2,6 +2,7 @@ package com.niangsa.dream_shop.controllers;
 
 
 import com.niangsa.dream_shop.dto.CartItemDto;
+import com.niangsa.dream_shop.entities.CartItem;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.interfaces.ICartItemService;
@@ -24,14 +25,11 @@ public class CartItemController {
             @RequestParam Long productId,
             @RequestParam(defaultValue = "1") int quantity
     ){
-        if(cartId == null){
-            cartId = cartService.initializeCart();
-        }
         cartItemService.addItemToCart(cartId,productId,quantity);
         return  ResponseEntity.status(CREATED).body(new ApiResponse("Item successfully added!",null));
     }
 
-    @GetMapping("")
+    @GetMapping()
     public  ResponseEntity<CartItemDto> getCartItem(@RequestParam Long cartId, @RequestParam Long productId){
         return ResponseEntity.ok(cartItemService.getCartItem(cartId, productId));
     }
