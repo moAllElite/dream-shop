@@ -15,7 +15,6 @@ import java.util.List;
 @RestController
 public class ProductController {
     private static final HttpStatus INTERNAL_ERROR_SERVER = HttpStatus.INTERNAL_SERVER_ERROR;
-    private static final HttpStatus NOT_FOUND = HttpStatus.NOT_FOUND;
     //inject service
     private  final IProductService productService;
 
@@ -38,8 +37,7 @@ public class ProductController {
     @PostMapping("/add")
     public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto product){
         try {
-           ProductDto a= productService.saveProduct(product);
-           System.out.println(a);
+          productService.saveProduct(product);
             return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Created success ", null));
         } catch (Exception e) {
             return  ResponseEntity.status(INTERNAL_ERROR_SERVER).body(new ApiResponse("Create failed", e.getMessage()));
@@ -88,9 +86,7 @@ public class ProductController {
 
     @GetMapping("/find-by")
     public ResponseEntity<List<ProductDto>> getProductByBrand(@RequestParam String brand){
-        List<ProductDto> productDtos = productService.getProductByBrand(brand);
-        System.out.println(productDtos);
-      return ResponseEntity.ok(productDtos);
+      return ResponseEntity.ok( productService.getProductByBrand(brand));
     }
 
     @GetMapping("/{category}/all")
@@ -98,11 +94,10 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductByCategory(category));
     }
 
-    @GetMapping("/by/category-and-brand")
-    public ResponseEntity<List<ProductDto>> getProductByCategoryAndBrand(@RequestParam String category,@RequestParam String brand){
-        List<ProductDto> p = productService.getProductByCategoryAndBand(category,brand);
-        System.out.println(p.stream().findFirst().map(ProductDto::getBrand));
-                return ResponseEntity.ok(p);
+    @GetMapping("/search-by/category-and-brand")
+    public ResponseEntity<List<ProductDto>> getProductByCategoryAndBrand(@RequestParam(name = "category") String category,@RequestParam(name = "brand") String brand){
+
+                return ResponseEntity.ok(productService.getProductByCategoryAndBand(brand,category));
     }
 
     @GetMapping("/by/name-and-brand")

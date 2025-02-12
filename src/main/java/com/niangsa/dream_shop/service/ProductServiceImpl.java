@@ -136,7 +136,7 @@ public class ProductServiceImpl implements IProductService {
      */
     @Override
     public List<ProductDto> getProductByCategoryAndBand(String brand, String category) {
-        return productRepository.findProductByCategoryNameAndBrand(category,brand)
+       return productRepository.findProductByBrandAndCategoryName( brand,category)
                 .stream().map(productMapper::toProductDto)
                 .toList();
     }
