@@ -8,18 +8,19 @@ import com.niangsa.dream_shop.mappers.CartMapper;
 import com.niangsa.dream_shop.repository.CartItemRepository;
 import com.niangsa.dream_shop.repository.CartRepository;
 import com.niangsa.dream_shop.service.interfaces.ICartService;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicLong;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Service
 public class CartServiceImpl implements ICartService {
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
     private final CartItemRepository cartItemRepository;
-
+    private final AtomicLong cardIdGenerator = new AtomicLong(0);
     /**
      * @param id cart Long
      * @return CartDto
@@ -58,6 +59,15 @@ public class CartServiceImpl implements ICartService {
                 .map(CartItemDto::getTotalPrice)
                 .reduce(BigDecimal.ZERO,BigDecimal::add);
     }
+    /**initialize the cart
+     * @return cart id long
+     */
 
-
+    @Override
+    public Long initializeCart(){
+        Cart newCart = new Cart();
+        Long cartId = cardIdGenerator.incrementAndGet();
+        newCart.setId(cartId);
+        return cartRepository.save(newCart).getId();
+    }
 }

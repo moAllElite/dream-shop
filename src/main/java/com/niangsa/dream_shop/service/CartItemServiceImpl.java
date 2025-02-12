@@ -15,6 +15,8 @@ import com.niangsa.dream_shop.service.interfaces.ICartService;
 import com.niangsa.dream_shop.service.interfaces.IProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -31,14 +33,14 @@ public class CartItemServiceImpl implements ICartItemService {
      * @param cartId  long
      * @param productId long
      * @param quantity int
+     *  //1. Get the cart
+     *         //2. Get the product
+     *         //3. check if the product already in the cart
+     *         // 4. If Yes, increase the quantity with reequested quantity
+     *         //5. If No, initiate a new cartItem entry
      */
     @Override
     public void addItemToCart(Long cartId, Long productId, int quantity) {
-        //1. Get the cart
-        //2. Get the product
-        //3. check if the product already in the cart
-        // 4. If Yes, increase the quantity with reequested quantity
-        //5. If No, initiate a new cartItem entry
         CartDto cartDto = cartService.getCart(cartId);
         ProductDto productDto = productService.getById(productId);
         CartItemDto cartItemDto = cartDto.getItems()

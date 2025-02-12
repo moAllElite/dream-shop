@@ -3,7 +3,9 @@ package com.niangsa.dream_shop.controllers;
 
 import com.niangsa.dream_shop.dto.CartItemDto;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
+import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.interfaces.ICartItemService;
+import com.niangsa.dream_shop.service.interfaces.ICartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +17,18 @@ import org.springframework.web.bind.annotation.*;
 public class CartItemController {
     private static final HttpStatus CREATED = HttpStatus.CREATED;
     private final ICartItemService cartItemService;
-
-    @PostMapping("/add")
-    public ResponseEntity<ApiRequestException> addItemToCart(@RequestParam Long cartId, @RequestParam Long productId,@RequestParam int quantity){
+    private final ICartService cartService;
+    @PostMapping("/item/add")
+    public ResponseEntity<ApiResponse> addItemToCart(
+            @RequestParam(required = false) Long cartId,
+            @RequestParam Long productId,
+            @RequestParam(defaultValue = "1") int quantity
+    ){
+        if(cartId == null){
+            cartId = cartService.initializeCart();
+        }
         cartItemService.addItemToCart(cartId,productId,quantity);
-        return  ResponseEntity.status(CREATED).body(new ApiRequestException("Item successfully added!",null));
+        return  ResponseEntity.status(CREATED).body(new ApiResponse("Item successfully added!",null));
     }
 
     @GetMapping("")
