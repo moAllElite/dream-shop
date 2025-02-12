@@ -12,6 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 public class CategoryController {
+    //inject service and apply IOC
     private final ICategoryService categoryService;
 
     /**

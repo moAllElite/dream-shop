@@ -1,6 +1,6 @@
 package com.niangsa.dream_shop.service.interfaces;
 
-import com.niangsa.dream_shop.entities.CartItem;
+import com.niangsa.dream_shop.dto.CartItemDto;
 
 public interface ICartItemService {
     //ADD item to the cart
@@ -11,5 +11,5 @@ public interface ICartItemService {
     void updateItemToCart(Long cartId,Long productId,int quantity);
 
     //get cart's item according to  product id & cart id
-    CartItem getCartItem(Long cartId, Long productId);
+    CartItemDto getCartItem(Long cartId, Long productId);
 }

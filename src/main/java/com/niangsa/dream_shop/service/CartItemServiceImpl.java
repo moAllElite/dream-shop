@@ -45,6 +45,7 @@ public class CartItemServiceImpl implements ICartItemService {
                 .stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst().orElse(new CartItemDto());
+
         if(cartItemDto.getId() == null){
             cartItemDto.setCart(cartDto);
             cartItemDto.setProduct(productDto);
@@ -54,12 +55,12 @@ public class CartItemServiceImpl implements ICartItemService {
             cartItemDto.setQuantity(quantity + cartItemDto.getQuantity() );
         }
 
-        CartItem cartItem =  cartItemMapper.toCartItemEntity(cartItemDto);
-        cartItem.setTotalPrice();
-        Cart cart = cartMapper.toCartEntity(cartDto);
+        CartItem cartItem =  cartItemMapper.toCartItemEntity(cartItemDto); // convert from dto to entity
+        cartItem.setTotalPrice();//update the total price which is equal to qte * unit price
+        Cart cart = cartMapper.toCartEntity(cartDto);// convert from dto to entity
         cart.addItem(cartItem);
-        cartItemRepository.save(cartItem);
-        cartRepository.save(cart);
+        cartItemRepository.save(cartItem); // persist on db
+        cartRepository.save(cart);// persist on db
     }
 
     /**
@@ -70,7 +71,7 @@ public class CartItemServiceImpl implements ICartItemService {
     @Override
     public void removeItemToCart(Long cartId, Long productId) {
         CartDto cartDto = cartService.getCart(cartId); //get the current cart
-        CartItem cartItem = getCartItem(cartId, productId);//get cart's item
+        CartItem cartItem = cartItemMapper.toCartItemEntity(getCartItem(cartId, productId));//get cart's item
        Cart cart = cartMapper.toCartEntity(cartDto);// convert to Entity
        cart.removeItem(cartItem); //drop item from cart
     }
@@ -99,7 +100,7 @@ public class CartItemServiceImpl implements ICartItemService {
                  );
             //get calculed totalamount after update quantity
             BigDecimal totalAmount = cart.getTotalAmount();
-            //assign
+            //assign the updated total amount
             cart.setTotalAmount(totalAmount);
             //save cart
             cartRepository.save(cart);
@@ -107,12 +108,11 @@ public class CartItemServiceImpl implements ICartItemService {
 
     //get cart's item according to  product id & cart id
     @Override
-    public CartItem getCartItem(Long cartId, Long productId) {
+    public CartItemDto getCartItem(Long cartId, Long productId) {
         CartDto cartDto = cartService.getCart(cartId);
         return cartDto.getItems()
                 .stream()
                 .filter(item-> item.getProduct().getId().equals(productId))
-                .map(cartItemMapper::toCartItemEntity)
                 .findFirst()
                 .orElseThrow(()-> new ApiRequestException("item  not found"));
     }
