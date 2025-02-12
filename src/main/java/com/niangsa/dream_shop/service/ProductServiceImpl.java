@@ -136,8 +136,7 @@ public class ProductServiceImpl implements IProductService {
      */
     @Override
     public List<ProductDto> getProductByCategoryAndBand(String brand, String category) {
-        return productRepository.findProductByCategoryNameAndBrand(brand, category)
-                .orElseThrow(()-> new ApiRequestException(String.format("No Product were found with provided brand %S & category's name %s ",brand,category)))
+        return productRepository.findProductByCategoryNameAndBrand(category,brand)
                 .stream().map(productMapper::toProductDto)
                 .toList();
     }
@@ -164,7 +163,6 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductDto> getProductByNameAndBrand(String brand, String name) {
         return productRepository.findByBrandAndName(brand, name)
-                .orElseThrow(()->new ApiRequestException("No product were with name "+ name +"and brand "+ brand))
                 .stream().map(productMapper::toProductDto)
                 .toList();
     }

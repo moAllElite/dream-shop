@@ -87,7 +87,7 @@ public class ProductController {
     }
 
     @GetMapping("/find-by")
-    public ResponseEntity<List<ProductDto>> getProductByBrand(@RequestParam(name = "brand") String brand){
+    public ResponseEntity<List<ProductDto>> getProductByBrand(@RequestParam String brand){
         List<ProductDto> productDtos = productService.getProductByBrand(brand);
         System.out.println(productDtos);
       return ResponseEntity.ok(productDtos);
@@ -98,9 +98,11 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductByCategory(category));
     }
 
-    @GetMapping("/by/category-and-name")
+    @GetMapping("/by/category-and-brand")
     public ResponseEntity<List<ProductDto>> getProductByCategoryAndBrand(@RequestParam String category,@RequestParam String brand){
-                return ResponseEntity.ok(productService.getProductByCategoryAndBand(brand,category));
+        List<ProductDto> p = productService.getProductByCategoryAndBand(category,brand);
+        System.out.println(p.stream().findFirst().map(ProductDto::getBrand));
+                return ResponseEntity.ok(p);
     }
 
     @GetMapping("/by/name-and-brand")
