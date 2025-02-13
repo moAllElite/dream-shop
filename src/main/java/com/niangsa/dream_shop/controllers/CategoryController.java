@@ -1,7 +1,7 @@
 package com.niangsa.dream_shop.controllers;
 
 import com.niangsa.dream_shop.dto.CategoryDto;
-import com.niangsa.dream_shop.service.interfaces.ICategoryService;
+import com.niangsa.dream_shop.service.category.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

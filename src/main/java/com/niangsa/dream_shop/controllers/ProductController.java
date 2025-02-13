@@ -2,7 +2,7 @@ package com.niangsa.dream_shop.controllers;
 
 import com.niangsa.dream_shop.dto.ProductDto;
 import com.niangsa.dream_shop.response.ApiResponse;
-import com.niangsa.dream_shop.service.interfaces.IProductService;
+import com.niangsa.dream_shop.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

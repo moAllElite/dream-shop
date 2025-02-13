@@ -1,4 +1,4 @@
-package com.niangsa.dream_shop.repository;
+package com.niangsa.dream_shop.repositories;
 
 import com.niangsa.dream_shop.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;

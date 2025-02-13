@@ -1,4 +1,4 @@
-package com.niangsa.dream_shop.service;
+package com.niangsa.dream_shop.service.image;
 
 import com.niangsa.dream_shop.dto.ImageDto;
 import com.niangsa.dream_shop.entities.Image;
@@ -6,9 +6,8 @@ import com.niangsa.dream_shop.entities.Product;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.ImageMapper;
 import com.niangsa.dream_shop.mappers.ProductMapper;
-import com.niangsa.dream_shop.repository.ImageRepository;
-import com.niangsa.dream_shop.service.interfaces.IImageService;
-import com.niangsa.dream_shop.service.interfaces.IProductService;
+import com.niangsa.dream_shop.repositories.ImageRepository;
+import com.niangsa.dream_shop.service.product.IProductService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

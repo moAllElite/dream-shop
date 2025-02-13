@@ -1,13 +1,12 @@
-package com.niangsa.dream_shop.service;
+package com.niangsa.dream_shop.service.product;
 
 import com.niangsa.dream_shop.dto.ProductDto;
 import com.niangsa.dream_shop.entities.Category;
 import com.niangsa.dream_shop.entities.Product;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.ProductMapper;
-import com.niangsa.dream_shop.repository.CategoryRepository;
-import com.niangsa.dream_shop.repository.ProductRepository;
-import com.niangsa.dream_shop.service.interfaces.IProductService;
+import com.niangsa.dream_shop.repositories.CategoryRepository;
+import com.niangsa.dream_shop.repositories.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,10 @@
-package com.niangsa.dream_shop.service.interfaces;
+package com.niangsa.dream_shop.service.product;
 
 import com.niangsa.dream_shop.dto.ProductDto;
+import com.niangsa.dream_shop.service.IAbstractService;
 
 import  java.util.List;
-public interface IProductService extends  IAbstractService<ProductDto> {
+public interface IProductService extends IAbstractService<ProductDto> {
     ProductDto saveProduct(ProductDto productDto);
     List<ProductDto> getProductByBrand(String brand);
     List<ProductDto> getProductByCategory(String category);

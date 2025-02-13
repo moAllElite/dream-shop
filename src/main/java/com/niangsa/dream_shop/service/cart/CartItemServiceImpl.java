@@ -1,4 +1,4 @@
-package com.niangsa.dream_shop.service;
+package com.niangsa.dream_shop.service.cart;
 
 import com.niangsa.dream_shop.dto.CartDto;
 import com.niangsa.dream_shop.dto.CartItemDto;
@@ -9,11 +9,9 @@ import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CartItemMapper;
 import com.niangsa.dream_shop.mappers.CartMapper;
 import com.niangsa.dream_shop.mappers.ProductMapper;
-import com.niangsa.dream_shop.repository.CartItemRepository;
-import com.niangsa.dream_shop.repository.CartRepository;
-import com.niangsa.dream_shop.service.interfaces.ICartItemService;
-import com.niangsa.dream_shop.service.interfaces.ICartService;
-import com.niangsa.dream_shop.service.interfaces.IProductService;
+import com.niangsa.dream_shop.repositories.CartItemRepository;
+import com.niangsa.dream_shop.repositories.CartRepository;
+import com.niangsa.dream_shop.service.product.IProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +39,9 @@ public class CartItemServiceImpl implements ICartItemService {
      */
     @Override
     public void addItemToCart(Long cartId, Long productId, int quantity) {
-        if(cartId == null ){
+        if (cartId == null){
             cartId = cartService.initializeCart();
         }
-
         Cart cart = cartMapper.toCartEntity(cartService.getCart(cartId));
         Product product =productMapper.toProductEntity( productService.getById(productId));
         CartItem cartItem = cart.getItems()
@@ -61,7 +58,6 @@ public class CartItemServiceImpl implements ICartItemService {
             cartItem.setQuantity(quantity + cartItem.getQuantity() );
         }
 
-
         cartItem.setTotalPrice();//update the total price which is equal to qte * unit price
         cart.addItem(cartItem);
         cartItemRepository.save(cartItem); // persist on db
@@ -76,9 +72,10 @@ public class CartItemServiceImpl implements ICartItemService {
     @Override
     public void removeItemToCart(Long cartId, Long productId) {
         CartDto cartDto = cartService.getCart(cartId); //get the current cart
-        CartItem cartItem =  cartItemMapper.toCartItemEntity(getCartItem(cartId, productId));//get cart's item
-       Cart cart = cartMapper.toCartEntity(cartDto);// convert to Entity
-       cart.removeItem(cartItem); //drop item from cart
+        CartItem itemToRemove =  cartItemMapper.toCartItemEntity(getCartItem(cartId, productId));//get cart's item
+        Cart cart = cartMapper.toCartEntity(cartDto);// convert to Entity
+        cart.removeItem(itemToRemove); //drop item from cart
+        cartRepository.save(cart);//persist cart on db
     }
 
     /**
@@ -113,7 +110,7 @@ public class CartItemServiceImpl implements ICartItemService {
 
     //get cart's item according to  product id & cart id
     @Override
-    public CartItemDto getCartItem(Long cartId, Long productId)  throws ApiRequestException {
+    public CartItemDto getCartItem(Long cartId, Long productId)  {
         CartDto cartDto =  cartService.getCart(cartId);
         return cartDto.getItems()
                 .stream()

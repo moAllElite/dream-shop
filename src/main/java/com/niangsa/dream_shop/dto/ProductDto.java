@@ -13,7 +13,7 @@ public class ProductDto {
     private String description;
     private BigDecimal price;
    // @NotNull(message = "L'inventory est obligatoire")
-    private String inventory;
+    private int inventory;
   //  @NotNull(message = "La marque est obligatoire")
     private String brand;
     private Category category;

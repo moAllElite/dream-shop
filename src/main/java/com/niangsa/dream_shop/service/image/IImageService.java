@@ -1,4 +1,4 @@
-package com.niangsa.dream_shop.service.interfaces;
+package com.niangsa.dream_shop.service.image;
 import  java.util.List;
 import com.niangsa.dream_shop.dto.ImageDto;
 import com.niangsa.dream_shop.entities.Image;

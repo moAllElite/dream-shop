@@ -1,15 +1,15 @@
-package com.niangsa.dream_shop.service;
+package com.niangsa.dream_shop.service.cart;
 
 import com.niangsa.dream_shop.dto.CartDto;
 import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.CartItem;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CartMapper;
-import com.niangsa.dream_shop.repository.CartItemRepository;
-import com.niangsa.dream_shop.repository.CartRepository;
-import com.niangsa.dream_shop.service.interfaces.ICartService;
+import com.niangsa.dream_shop.repositories.CartItemRepository;
+import com.niangsa.dream_shop.repositories.CartRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicLong;
@@ -36,16 +36,17 @@ public class CartServiceImpl implements ICartService {
 
     /**
      * drop cart content & remove all cart item related to the cart
-     * @param id cart
+     * @param cartId cart
      */
+    @Transactional
     @Override
-    public void clearCart(Long id) {
+    public void clearCart(Long cartId) {
         //1- Get cart info
-        Cart cart = cartMapper.toCartEntity(getCart(id));
+        Cart cart = cartMapper.toCartEntity(getCart(cartId));
         // clear cart that contain cart items info
+        cartItemRepository.deleteAllByCartId(cartId);
         cart.getItems().clear();
-        cartItemRepository.deleteAllByCartId(id);
-        cartRepository.deleteById(id); //drop the current cart
+        cartRepository.deleteById(cartId); //drop the current cart
     }
 
     /**
@@ -69,5 +70,16 @@ public class CartServiceImpl implements ICartService {
         Long cartId = cardIdGenerator.incrementAndGet();
         newCart.setId(cartId);
         return cartRepository.save(newCart).getId();
+    }
+
+    /**
+     * @param orderId  long
+     * @return Cart Dto
+     */
+    @Override
+    public CartDto getCartByOrderId(Long orderId) {
+        return cartRepository.findCartByOrder(orderId)
+                .map(cartMapper::toCartDto)
+                .orElseThrow(()->  new ApiRequestException("Cart not found"));
     }
 }

@@ -1,11 +1,10 @@
-package com.niangsa.dream_shop.service;
+package com.niangsa.dream_shop.service.category;
 
 import com.niangsa.dream_shop.dto.CategoryDto;
 import com.niangsa.dream_shop.entities.Category;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CategoryMapper;
-import com.niangsa.dream_shop.repository.CategoryRepository;
-import com.niangsa.dream_shop.service.interfaces.ICategoryService;
+import com.niangsa.dream_shop.repositories.CategoryRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

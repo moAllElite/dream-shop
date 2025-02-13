@@ -4,7 +4,7 @@ package com.niangsa.dream_shop.controllers;
 import com.niangsa.dream_shop.dto.ImageDto;
 import com.niangsa.dream_shop.entities.Image;
 import com.niangsa.dream_shop.response.ApiResponse;
-import com.niangsa.dream_shop.service.interfaces.IImageService;
+import com.niangsa.dream_shop.service.image.IImageService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;

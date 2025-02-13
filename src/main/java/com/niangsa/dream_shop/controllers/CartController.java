@@ -3,10 +3,8 @@ package com.niangsa.dream_shop.controllers;
 
 import com.niangsa.dream_shop.dto.CartDto;
 import com.niangsa.dream_shop.response.ApiResponse;
-import com.niangsa.dream_shop.service.interfaces.ICartItemService;
-import com.niangsa.dream_shop.service.interfaces.ICartService;
+import com.niangsa.dream_shop.service.cart.ICartService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +28,7 @@ public class CartController {
 
     @DeleteMapping("/{cartId}/clear")
     public  ResponseEntity<ApiResponse> clearCart(@PathVariable Long cartId){
+        cartService.clearCart(cartId);
         return ResponseEntity.ok().body(new ApiResponse("Clear cart success !",null));
     }
 

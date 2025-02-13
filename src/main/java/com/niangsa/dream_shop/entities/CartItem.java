@@ -26,7 +26,6 @@ public class CartItem {
     @ManyToOne()
     @JoinColumn(name = "product_id")
     private Product product;
-
     public void setTotalPrice() {
         this.totalPrice = this.unitPrice.multiply(new BigDecimal(quantity));
     }
