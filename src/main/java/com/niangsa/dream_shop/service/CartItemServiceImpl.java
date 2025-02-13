@@ -41,7 +41,7 @@ public class CartItemServiceImpl implements ICartItemService {
      */
     @Override
     public void addItemToCart(Long cartId, Long productId, int quantity) {
-        if(cartId == null){
+        if(cartId == null ){
             cartId = cartService.initializeCart();
         }
 
@@ -113,12 +113,12 @@ public class CartItemServiceImpl implements ICartItemService {
 
     //get cart's item according to  product id & cart id
     @Override
-    public CartItemDto getCartItem(Long cartId, Long productId) {
-        CartDto cartDto = cartService.getCart(cartId);
+    public CartItemDto getCartItem(Long cartId, Long productId)  throws ApiRequestException {
+        CartDto cartDto =  cartService.getCart(cartId);
         return cartDto.getItems()
                 .stream()
                 .filter(item-> item.getProduct().getId().equals(productId))
                 .findFirst()
-                .orElseThrow(()-> new ApiRequestException("item  not found"));
+                .orElseThrow(()-> new ApiRequestException("item  not found",null));
     }
 }

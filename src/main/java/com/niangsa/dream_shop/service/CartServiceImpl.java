@@ -1,8 +1,8 @@
 package com.niangsa.dream_shop.service;
 
 import com.niangsa.dream_shop.dto.CartDto;
-import com.niangsa.dream_shop.dto.CartItemDto;
 import com.niangsa.dream_shop.entities.Cart;
+import com.niangsa.dream_shop.entities.CartItem;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CartMapper;
 import com.niangsa.dream_shop.repository.CartItemRepository;
@@ -41,9 +41,9 @@ public class CartServiceImpl implements ICartService {
     @Override
     public void clearCart(Long id) {
         //1- Get cart info
-        CartDto cartDto = getCart(id);
+        Cart cart = cartMapper.toCartEntity(getCart(id));
         // clear cart that contain cart items info
-        cartDto.getItems().clear();
+        cart.getItems().clear();
         cartItemRepository.deleteAllByCartId(id);
         cartRepository.deleteById(id); //drop the current cart
     }
@@ -54,9 +54,9 @@ public class CartServiceImpl implements ICartService {
      */
     @Override
     public BigDecimal getTotalPrice(Long id) {
-        CartDto cartDto =  getCart(id);
-        return cartDto.getItems().stream()
-                .map(CartItemDto::getTotalPrice)
+        Cart cart =  cartMapper.toCartEntity(getCart(id));
+        return cart.getItems().stream()
+                .map(CartItem::getTotalPrice)
                 .reduce(BigDecimal.ZERO,BigDecimal::add);
     }
     /**initialize the cart

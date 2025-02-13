@@ -1,7 +1,6 @@
 package com.niangsa.dream_shop.service.interfaces;
 
 import com.niangsa.dream_shop.dto.CartItemDto;
-import com.niangsa.dream_shop.entities.CartItem;
 
 public interface ICartItemService {
     //ADD item to the cart
