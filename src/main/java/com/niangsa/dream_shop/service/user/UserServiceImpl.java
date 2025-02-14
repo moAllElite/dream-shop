@@ -6,15 +6,17 @@ import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.UserMapper;
 import com.niangsa.dream_shop.repositories.UserRepository;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
+
 @AllArgsConstructor
+@Service
 public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
+    private static final String ERROR_NOT_FOUND_MESSAGE ="User not found";
     private final UserMapper userMapper;
     /**
      * check if user already exist otherwise we registered in db
@@ -48,7 +50,7 @@ public class UserServiceImpl implements IUserService {
     public UserDto getById(Long id) {
         return userRepository.findById(id)
                 .map(userMapper::toUserDto)
-                .orElseThrow(()-> new ApiRequestException("User not found"));
+                .orElseThrow(()-> new ApiRequestException(ERROR_NOT_FOUND_MESSAGE));
     }
 
     /**
@@ -58,7 +60,7 @@ public class UserServiceImpl implements IUserService {
     public void delete(Long id) {
      userRepository.findById(id)
                 .ifPresentOrElse(userRepository::delete, ()-> {
-                    throw  new ApiRequestException("User not found");
+                    throw  new ApiRequestException(ERROR_NOT_FOUND_MESSAGE);
                 });
     }
 
@@ -70,14 +72,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserDto update(Long id, UserDto userDto) {
         User user = userRepository.findById(id)
-                .map((existingUser)->{
+                .map(existingUser->{
                     existingUser.setPassword(userDto.getPassword());
-                    //existingUser.setUsername(userDto.getUsername());
                     return userRepository.save(existingUser);
                 })
-                .orElseThrow(
-                        ()->{return   new ApiRequestException("User not found");}
-                );
+                .orElseThrow(()-> new ApiRequestException(ERROR_NOT_FOUND_MESSAGE));
         return userMapper.toUserDto(user);
     }
 

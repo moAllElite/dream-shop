@@ -16,12 +16,10 @@ public class OrderItem {
     private Long id;
     private BigDecimal price;
     private int quantity;
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
-
-
 }

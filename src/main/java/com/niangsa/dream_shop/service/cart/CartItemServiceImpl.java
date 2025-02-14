@@ -116,6 +116,6 @@ public class CartItemServiceImpl implements ICartItemService {
                 .stream()
                 .filter(item-> item.getProduct().getId().equals(productId))
                 .findFirst()
-                .orElseThrow(()-> new ApiRequestException("item  not found",null));
+                .orElseThrow(()-> new ApiRequestException("item  not found"));
     }
 }

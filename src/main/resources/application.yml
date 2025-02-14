@@ -4,10 +4,10 @@ spring:
   jpa:
     database: mysql
     hibernate:
-      ddl-auto:  update
+      ddl-auto:  create-drop
     show-sql: true
   datasource:
-    url: jdbc:mysql://localhost:3306/adminapp-db
+    url: jdbc:mysql://localhost:3306/adminapp-db?createDatabaseIfNotExist=true
     password: user123
     username: user
   servlet:

@@ -21,14 +21,5 @@ public class ApiExceptionHandler {
         );
         return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(value = ApiRequestException.class)
-    public ResponseEntity<Object> handleEntityAlreadyExistException(ApiRequestException e) {
-        ApiException apiException = new ApiException(
-                e.getMessage(),
-                e,
-                HttpStatus.CONFLICT,
-                ZonedDateTime.now(ZoneId.of("Z"))
-        );
-        return new ResponseEntity<>(apiException,HttpStatus.CONFLICT);
-    }
+
 }

@@ -7,14 +7,14 @@ import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CartMapper;
 import com.niangsa.dream_shop.repositories.CartItemRepository;
 import com.niangsa.dream_shop.repositories.CartRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicLong;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class CartServiceImpl implements ICartService {
     private final CartRepository cartRepository;
@@ -73,12 +73,12 @@ public class CartServiceImpl implements ICartService {
     }
 
     /**
-     * @param orderId  long
+     * @param userId  long
      * @return Cart Dto
      */
     @Override
-    public CartDto getCartByOrderId(Long orderId) {
-        return cartRepository.findCartByOrder(orderId)
+    public CartDto getCartByUserId(Long userId) {
+        return cartRepository.findCartByUserId(userId)
                 .map(cartMapper::toCartDto)
                 .orElseThrow(()->  new ApiRequestException("Cart not found"));
     }

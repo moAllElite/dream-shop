@@ -1,8 +1,6 @@
 package com.niangsa.dream_shop.dto;
 
 import com.niangsa.dream_shop.enums.OrderStatuts;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -16,8 +14,6 @@ import java.util.Set;
 public class OrderDto {
     private Long id;
     private LocalDate orderDate;
-    private BigDecimal price;
-    @Enumerated(EnumType.STRING)
     private OrderStatuts orderStatuts;
     private BigDecimal totalAmount;
     private Set<OrderItemDto> orderItems;

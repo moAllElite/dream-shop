@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IOrderService {
 
-    void placeOrder(Long orderId);
+    OrderDto placeOrder(Long orderId);
 
 
     OrderDto getOrder(Long orderId);
