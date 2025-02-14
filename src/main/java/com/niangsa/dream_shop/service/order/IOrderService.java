@@ -4,9 +4,9 @@ import com.niangsa.dream_shop.dto.OrderDto;
 
 import java.util.List;
 
-public interface IOrderItem {
+public interface IOrderService {
 
-    OrderDto placeOrder(Long orderId);
+    void placeOrder(Long orderId);
 
 
     OrderDto getOrder(Long orderId);

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/carts")
 @RestController
 public class CartController {
-    // inject the services
+    // inject the cart's services
     private final ICartService cartService;
 
     @GetMapping("/{cartId}")

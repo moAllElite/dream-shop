@@ -24,7 +24,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Service
-public class OrderItemImpl implements IOrderItem {
+public class OrderServiceImpl implements IOrderService {
     //inject repository ,service & mapper
     private final OrderMapper orderMapper;
     private final OrderRepository orderRepository;
@@ -35,11 +35,11 @@ public class OrderItemImpl implements IOrderItem {
     private final OrderItemMapper orderItemMapper;
     /**
      * Persist order on db
+     *
      * @param orderId long
-     * @return orderdto
      */
     @Override
-    public OrderDto placeOrder(Long orderId) {
+    public void placeOrder(Long orderId) {
         CartDto cartDto = cartService.getCartByOrderId(orderId);
         OrderDto orderDto = getOrder(orderId);
         List<OrderItemDto> orderItemDtos = createOrderItems(orderDto,cartDto) ;
@@ -47,8 +47,7 @@ public class OrderItemImpl implements IOrderItem {
         orderDto.setTotalAmount(calculateToAmount(orderItemDtos));//update total amount
         Order savedOrder = orderRepository.save(orderMapper.toOrderEntity(orderDto));  //persist order
         cartService.clearCart(cartDto.getId());//clear the cart
-
-        return orderMapper.toOrderDto(savedOrder);
+        orderMapper.toOrderDto(savedOrder);
     }
 
     /**

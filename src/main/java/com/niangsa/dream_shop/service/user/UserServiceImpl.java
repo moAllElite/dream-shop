@@ -26,7 +26,7 @@ public class UserServiceImpl implements IUserService {
         return Optional.of(userDto)
                 .filter(user -> !userRepository.existsByEmail(user.getEmail()))
                 .map(newUserDto ->{
-                 UserDto  savedUserDto =UserDto.builder()
+                 UserDto  savedUserDto = UserDto.builder()
                             .email(userDto.getEmail())
                             .username(userDto.getUsername())
                             .password(userDto.getPassword())
@@ -63,9 +63,9 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**
-     * @param id
-     * @param userDto
-     * @return
+     * @param id user
+     * @param userDto from form
+     * @return User Data transfert object
      */
     @Override
     public UserDto update(Long id, UserDto userDto) {
