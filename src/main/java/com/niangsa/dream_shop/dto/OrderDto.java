@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDto {
-    private Long id;
+    private Long orderId;
     private LocalDate orderDate;
     private BigDecimal price;
     @Enumerated(EnumType.STRING)

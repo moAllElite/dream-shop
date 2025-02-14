@@ -4,12 +4,13 @@ package com.niangsa.dream_shop.controllers;
 import com.niangsa.dream_shop.dto.CartDto;
 import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.cart.ICartService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/carts")
 @RestController
 public class CartController {

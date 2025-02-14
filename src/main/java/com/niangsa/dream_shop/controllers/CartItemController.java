@@ -5,12 +5,13 @@ import com.niangsa.dream_shop.dto.CartItemDto;
 import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.cart.ICartItemService;
 import com.niangsa.dream_shop.service.cart.ICartService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/cartItems")
 @RestController
 public class CartItemController {

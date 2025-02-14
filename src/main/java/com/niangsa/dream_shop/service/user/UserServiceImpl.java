@@ -7,12 +7,14 @@ import com.niangsa.dream_shop.mappers.UserMapper;
 import com.niangsa.dream_shop.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
+
 @AllArgsConstructor
+@Service
 public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;

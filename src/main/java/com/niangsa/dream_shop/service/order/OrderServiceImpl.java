@@ -36,18 +36,19 @@ public class OrderServiceImpl implements IOrderService {
     /**
      * Persist order on db
      *
-     * @param orderId long
+     * @param userId long
      */
     @Override
-    public void placeOrder(Long orderId) {
-        CartDto cartDto = cartService.getCartByOrderId(orderId);
-        OrderDto orderDto = getOrder(orderId);
+    public OrderDto placeOrder(Long userId) {
+
+        CartDto cartDto = cartService.getCartByUserId(userId);
+        OrderDto orderDto = createOrder(cartDto);
         List<OrderItemDto> orderItemDtos = createOrderItems(orderDto,cartDto) ;
         orderDto.setOrderItems(new HashSet<>(orderItemDtos));
         orderDto.setTotalAmount(calculateToAmount(orderItemDtos));//update total amount
         Order savedOrder = orderRepository.save(orderMapper.toOrderEntity(orderDto));  //persist order
-        cartService.clearCart(cartDto.getId());//clear the cart
-        orderMapper.toOrderDto(savedOrder);
+        cartService.clearCart(cartDto.getId());//clear the cart after order saved
+        return orderMapper.toOrderDto(savedOrder);
     }
 
     /**
@@ -97,6 +98,11 @@ public class OrderServiceImpl implements IOrderService {
                 .build();
     }
 
+    /***
+     * calculate the total amout =  quantity * price
+     * @param orderItemList
+     * @return
+     */
     public BigDecimal calculateToAmount(List<OrderItemDto> orderItemList){
         return   orderItemList.stream()
                 .map(orderItemMapper::toOrderItemEntity)
@@ -110,7 +116,7 @@ public class OrderServiceImpl implements IOrderService {
      * @return List of orders by user
      */
     @Override
-    public List<OrderDto> getUserOrders(Long userId){
+    public List<OrderDto> getOrdersByUserId(Long userId){
         return  orderRepository.findByUserId(userId).stream()
                 .map(orderMapper::toOrderDto)
                 .toList();

@@ -19,8 +19,8 @@ public class OrderController {
     private static final HttpStatus CREATED =  HttpStatus.CREATED;
 
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> createOrder(@PathVariable Long orderId){
-        orderService.placeOrder(orderId);
+    public ResponseEntity<ApiResponse> createOrder(@PathVariable Long userId){
+        orderService.placeOrder(userId);
         return  ResponseEntity.status(CREATED).body(new ApiResponse("Ordre create Success",null));
     }
 
@@ -31,7 +31,7 @@ public class OrderController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<OrderDto>> getOrderByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(orderService.getUserOrders(userId));
+        return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
     }
 
 

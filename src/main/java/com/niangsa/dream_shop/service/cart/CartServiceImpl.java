@@ -73,12 +73,12 @@ public class CartServiceImpl implements ICartService {
     }
 
     /**
-     * @param orderId  long
+     * @param userId  long
      * @return Cart Dto
      */
     @Override
-    public CartDto getCartByOrderId(Long orderId) {
-        return cartRepository.findCartByOrder(orderId)
+    public CartDto getCartByUserId(Long userId) {
+        return cartRepository.findCartByUserId(userId)
                 .map(cartMapper::toCartDto)
                 .orElseThrow(()->  new ApiRequestException("Cart not found"));
     }

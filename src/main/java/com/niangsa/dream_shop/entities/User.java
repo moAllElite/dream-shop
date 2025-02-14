@@ -22,7 +22,8 @@ public class User {
     private String lastName;
     private String email;
     private String password;
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+    //@JoinColumn(name = "user_id")
     private Cart cart;
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Order> orders;

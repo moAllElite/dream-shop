@@ -15,12 +15,12 @@ import java.util.Set;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long orderId;
     private int quantity;
     private BigDecimal totalAmount;
-    @OneToMany(mappedBy = "order_id",orphanRemoval = true,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order",orphanRemoval = true,cascade = CascadeType.ALL)
     private Set<OrderItem> orderItems = new HashSet<>();
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "user_id")
     private User user;
 }
