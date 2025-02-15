@@ -41,10 +41,11 @@ public class CartItemServiceImpl implements ICartItemService {
      *         // 4. If Yes, increase the quantity with reequested quantity
      *         //5. If No, initiate a new cartItem entry
      */
+    private final UserMapper userMapper;
     @Override
     public void addItemToCart( Long productId,Long userId, int quantity) {
-        UserDto userDto =userService.getById(userId);
-        Long    cartId = cartService.initializeCart(userDto);
+        User user= userMapper.toUserEntity(userService.getById(userId));
+        Long    cartId = cartService.initializeCart(user);
         CartDto cartDto =cartService.getCart(cartId);
 
         Cart cart = cartMapper.toCartEntity(cartDto);

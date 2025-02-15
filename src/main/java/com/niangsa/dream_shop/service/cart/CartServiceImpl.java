@@ -71,11 +71,11 @@ public class CartServiceImpl implements ICartService {
      */
     private final UserMapper userMapper;
     @Override
-    public Long initializeCart(UserDto userDto){
-       return Optional.ofNullable(cartMapper.toCartEntity(getCartByUserId(userDto.getId())))
+    public Long initializeCart(User user){
+       return Optional.ofNullable(getCartByUserId(user.getId()))
                .orElseGet(()->{
                    Cart cart= new Cart();
-                   cart.setUser(userMapper.toUserEntity(userDto));
+                   cart.setUser(user);
                    return cartRepository.save(cart);
                }).getId();
     }
@@ -85,9 +85,9 @@ public class CartServiceImpl implements ICartService {
      * @return Cart Dto
      */
     @Override
-    public CartDto getCartByUserId(Long userId) {
-        return cartRepository.findCartByUserId(userId)
-                .map(cartMapper::toCartDto)
-                .orElseThrow(()->  new ApiRequestException(String.format(" No cart  assign to  this user  were not found with provided id :%s",userId)));
+    public Cart getCartByUserId(Long userId) {
+        return cartRepository.findCartByUserId(userId);
+                //.map(cartMapper::toCartDto)
+                //.orElseThrow(()->  new ApiRequestException(String.format(" No cart  assign to  this user  were not found with provided id :%s",userId)));
     }
 }

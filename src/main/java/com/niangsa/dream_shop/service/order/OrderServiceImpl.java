@@ -3,10 +3,12 @@ package com.niangsa.dream_shop.service.order;
 import com.niangsa.dream_shop.dto.CartDto;
 import com.niangsa.dream_shop.dto.OrderDto;
 import com.niangsa.dream_shop.dto.OrderItemDto;
+import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.Order;
 import com.niangsa.dream_shop.entities.Product;
 import com.niangsa.dream_shop.enums.OrderStatuts;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
+import com.niangsa.dream_shop.mappers.CartMapper;
 import com.niangsa.dream_shop.mappers.OrderItemMapper;
 import com.niangsa.dream_shop.mappers.OrderMapper;
 import com.niangsa.dream_shop.mappers.ProductMapper;
@@ -33,6 +35,7 @@ public class OrderServiceImpl implements IOrderService {
     private final ProductRepository productRepository;
     private final ICartService cartService;
     private final OrderItemMapper orderItemMapper;
+    private final CartMapper cartMapper;
     /**
      * Persist order on db
      *
@@ -40,13 +43,14 @@ public class OrderServiceImpl implements IOrderService {
      */
     @Override
     public OrderDto placeOrder(Long userId) {
-        CartDto cartDto = cartService.getCartByUserId(userId);
+        Cart cart= cartService.getCartByUserId(userId);
+        CartDto cartDto= cartMapper.toCartDto(cart);
         OrderDto orderDto = createOrder(cartDto);
         List<OrderItemDto> orderItemDtos = createOrderItems(orderDto,cartDto) ;
         orderDto.setTotalAmount(calculateToAmount(orderItemDtos));//update total amount
         orderDto.setOrderItems(new HashSet<>(orderItemDtos));
         Order savedOrder = orderRepository.save(orderMapper.toOrderEntity(orderDto));  //persist order
-        cartService.clearCart(cartDto.getId());//clear the cart
+       // cartService.clearCart(cartDto.getId());//clear the cart
         return orderMapper.toOrderDto(savedOrder);
     }
 
@@ -111,8 +115,7 @@ public class OrderServiceImpl implements IOrderService {
      */
     @Override
     public List<OrderDto> getUserOrders(Long userId){
-        return  orderRepository.findByUserId(userId).stream()
-                .map(orderMapper::toOrderDto)
-                .toList();
+        return  orderRepository.findByUserId(userId)
+                .stream().map(orderMapper::toOrderDto).toList();
     }
 }
