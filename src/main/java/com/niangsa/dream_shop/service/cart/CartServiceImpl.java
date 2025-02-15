@@ -1,17 +1,22 @@
 package com.niangsa.dream_shop.service.cart;
 
 import com.niangsa.dream_shop.dto.CartDto;
+import com.niangsa.dream_shop.dto.UserDto;
 import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.CartItem;
+import com.niangsa.dream_shop.entities.User;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CartMapper;
+import com.niangsa.dream_shop.mappers.UserMapper;
 import com.niangsa.dream_shop.repositories.CartItemRepository;
 import com.niangsa.dream_shop.repositories.CartRepository;
+import com.niangsa.dream_shop.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RequiredArgsConstructor
@@ -19,6 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class CartServiceImpl implements ICartService {
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
+    private final IUserService userService;
     private final CartItemRepository cartItemRepository;
     private final AtomicLong cardIdGenerator = new AtomicLong(0);
     /**
@@ -63,13 +69,15 @@ public class CartServiceImpl implements ICartService {
     /**initialize the cart
      * @return cart id long
      */
-
+    private final UserMapper userMapper;
     @Override
-    public Long initializeCart(){
-        Cart newCart = new Cart();
-        Long cartId = cardIdGenerator.incrementAndGet();
-        newCart.setId(cartId);
-        return cartRepository.save(newCart).getId();
+    public Long initializeCart(UserDto userDto){
+       return Optional.ofNullable(cartMapper.toCartEntity(getCartByUserId(userDto.getId())))
+               .orElseGet(()->{
+                   Cart cart= new Cart();
+                   cart.setUser(userMapper.toUserEntity(userDto));
+                   return cartRepository.save(cart);
+               }).getId();
     }
 
     /**
@@ -80,6 +88,6 @@ public class CartServiceImpl implements ICartService {
     public CartDto getCartByUserId(Long userId) {
         return cartRepository.findCartByUserId(userId)
                 .map(cartMapper::toCartDto)
-                .orElseThrow(()->  new ApiRequestException("Cart not found"));
+                .orElseThrow(()->  new ApiRequestException(String.format(" No cart  assign to  this user  were not found with provided id :%s",userId)));
     }
 }

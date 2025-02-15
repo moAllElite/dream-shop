@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/orders/")
+@RequestMapping("/orders")
 @RestController
 public class OrderController {
     private final IOrderService orderService;
@@ -27,8 +27,8 @@ public class OrderController {
     }
 
 
-    @PostMapping("/{userId}")
-    public ResponseEntity<ApiResponse> createOrder(@PathVariable Long userId) {
+    @PostMapping("/add")
+    public ResponseEntity<ApiResponse> createOrder(@RequestParam Long userId) {
         orderService.placeOrder(userId);
         return ResponseEntity.status(CREATED).body(new ApiResponse("Order save success !",null));
     }

@@ -43,8 +43,8 @@ public class OrderServiceImpl implements IOrderService {
         CartDto cartDto = cartService.getCartByUserId(userId);
         OrderDto orderDto = createOrder(cartDto);
         List<OrderItemDto> orderItemDtos = createOrderItems(orderDto,cartDto) ;
-        orderDto.setOrderItems(new HashSet<>(orderItemDtos));
         orderDto.setTotalAmount(calculateToAmount(orderItemDtos));//update total amount
+        orderDto.setOrderItems(new HashSet<>(orderItemDtos));
         Order savedOrder = orderRepository.save(orderMapper.toOrderEntity(orderDto));  //persist order
         cartService.clearCart(cartDto.getId());//clear the cart
         return orderMapper.toOrderDto(savedOrder);

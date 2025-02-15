@@ -12,7 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "customer_order")
+@Table(name = "orders")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {

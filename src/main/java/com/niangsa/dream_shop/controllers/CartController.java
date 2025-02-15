@@ -22,7 +22,7 @@ public class CartController {
     }
 
     @GetMapping("/{cartId}/total-price")
-    public  ResponseEntity<ApiResponse> updateCart(@PathVariable Long cartId){
+    public  ResponseEntity<ApiResponse> getCartTotalPrice(@PathVariable Long cartId){
         return ResponseEntity.ok().body(new ApiResponse("Total price",cartService.getTotalPrice(cartId)));
     }
 

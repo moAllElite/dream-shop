@@ -1,37 +1,37 @@
 services:
 
-  mysql-admin-db:
+  mysql-dreamshop-db:
     image: mysql:8.0
-    container_name: container_mysql-admin-db
+    container_name: container_mysql-dreamshop-db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: adminapp-db
+      MYSQL_DATABASE: dreamshop-db
       MYSQL_USER: user
       MYSQL_PASSWORD: user123
     ports:
       - "3306:3306"
     volumes:
-      - admin_mysql_data:/var/lib/mysql
+      - dreamshop_mysql_data:/var/lib/mysql
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
 
 
-  phpmyadmin-admin-db:
-    container_name: container_phpmyadmin-admindb
+  phpmyadmin-dreamshop-db:
+    container_name: container_phpmyadmin-dreamshopdb
     image: phpmyadmin/phpmyadmin:latest
     ports:
       - "8085:80"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      PMA_HOST: mysql-admin-db
+      PMA_HOST: mysql-dreamshop-db
       PMA_USER: user
       PMA_PASSWORD: user123
     depends_on:
-      - mysql-admin-db
+      - mysql-dreamshop-db
     restart: unless-stopped
 
 
 
 volumes:
-  admin_mysql_data:
+  dreamshop_mysql_data:
     driver: local

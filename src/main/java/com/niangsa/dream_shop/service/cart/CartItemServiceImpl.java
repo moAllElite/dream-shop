@@ -2,16 +2,20 @@ package com.niangsa.dream_shop.service.cart;
 
 import com.niangsa.dream_shop.dto.CartDto;
 import com.niangsa.dream_shop.dto.CartItemDto;
+import com.niangsa.dream_shop.dto.UserDto;
 import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.CartItem;
 import com.niangsa.dream_shop.entities.Product;
+import com.niangsa.dream_shop.entities.User;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CartItemMapper;
 import com.niangsa.dream_shop.mappers.CartMapper;
 import com.niangsa.dream_shop.mappers.ProductMapper;
+import com.niangsa.dream_shop.mappers.UserMapper;
 import com.niangsa.dream_shop.repositories.CartItemRepository;
 import com.niangsa.dream_shop.repositories.CartRepository;
 import com.niangsa.dream_shop.service.product.IProductService;
+import com.niangsa.dream_shop.service.user.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,23 +31,25 @@ public class CartItemServiceImpl implements ICartItemService {
     private final ProductMapper productMapper;
     private final CartRepository cartRepository;
     private final IProductService productService;
+    private final IUserService userService;
     /**
-     * @param cartId  long
      * @param productId long
      * @param quantity int
-     *  //1. Get the cart
+     *  //1. Get the cart from user Id
      *         //2. Get the product
      *         //3. check if the product already in the cart
      *         // 4. If Yes, increase the quantity with reequested quantity
      *         //5. If No, initiate a new cartItem entry
      */
     @Override
-    public void addItemToCart(Long cartId, Long productId, int quantity) {
-        if (cartId == null){
-            cartId = cartService.initializeCart();
-        }
-        Cart cart = cartMapper.toCartEntity(cartService.getCart(cartId));
-        Product product =productMapper.toProductEntity( productService.getById(productId));
+    public void addItemToCart( Long productId,Long userId, int quantity) {
+        UserDto userDto =userService.getById(userId);
+        Long    cartId = cartService.initializeCart(userDto);
+        CartDto cartDto =cartService.getCart(cartId);
+
+        Cart cart = cartMapper.toCartEntity(cartDto);
+
+        Product product = productMapper.toProductEntity( productService.getById(productId));
         CartItem cartItem = cart.getItems()
                 .stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
