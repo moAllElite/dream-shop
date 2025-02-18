@@ -24,8 +24,14 @@ public class Order {
     private OrderStatuts orderStatuts;
     private BigDecimal totalAmount;
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL,orphanRemoval = true)
-    private Set<OrderItem> orderItems = new HashSet<>();
+    private Set<OrderItem> orderItems;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public Order(OrderStatuts orderStatuts, LocalDate localDate, User user) {
+        this.orderStatuts = orderStatuts;
+        this.orderDate = localDate;
+        this.user = user;
+    }
 }

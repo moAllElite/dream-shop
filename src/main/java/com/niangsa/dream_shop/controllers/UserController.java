@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> getUserById(Long userId){
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long userId){
         return ResponseEntity.ok(userService.getById(userId));
     }
 
@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse> deleteUser(Long userId){
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long userId){
         userService.delete(userId);
         return ResponseEntity.ok().body(new ApiResponse("user delete success",null));
     }

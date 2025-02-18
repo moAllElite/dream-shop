@@ -7,7 +7,6 @@ import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.CartItem;
 import com.niangsa.dream_shop.entities.Product;
 import com.niangsa.dream_shop.entities.User;
-import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CartItemMapper;
 import com.niangsa.dream_shop.mappers.CartMapper;
 import com.niangsa.dream_shop.mappers.ProductMapper;
@@ -16,6 +15,7 @@ import com.niangsa.dream_shop.repositories.CartItemRepository;
 import com.niangsa.dream_shop.repositories.CartRepository;
 import com.niangsa.dream_shop.service.product.IProductService;
 import com.niangsa.dream_shop.service.user.IUserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +32,7 @@ public class CartItemServiceImpl implements ICartItemService {
     private final CartRepository cartRepository;
     private final IProductService productService;
     private final IUserService userService;
+
     /**
      * @param productId long
      * @param quantity int
@@ -44,31 +45,35 @@ public class CartItemServiceImpl implements ICartItemService {
     private final UserMapper userMapper;
     @Override
     public void addItemToCart( Long productId,Long userId, int quantity) {
-        User user= userMapper.toUserEntity(userService.getById(userId));
-        Long    cartId = cartService.initializeCart(user);
-        CartDto cartDto =cartService.getCart(cartId);
+        try {
+            User user= userMapper.toUserEntity(userService.getById(userId));
+            Long    cartId = cartService.initializeCart(user);
+            CartDto cartDto = cartService.getCart(cartId);
+            Cart cart = cartMapper.toCartEntity(cartDto);
 
-        Cart cart = cartMapper.toCartEntity(cartDto);
+            Product product = productMapper.toProductEntity( productService.getById(productId));
+            CartItem cartItem = cart.getItems()
+                    .stream()
+                    .filter(item -> item.getProduct().getId().equals(productId))
+                    .findFirst().orElse(new CartItem());
 
-        Product product = productMapper.toProductEntity( productService.getById(productId));
-        CartItem cartItem = cart.getItems()
-                .stream()
-                .filter(item -> item.getProduct().getId().equals(productId))
-                .findFirst().orElse(new CartItem());
+            if(cartItem.getId() == null){
+                cartItem.setCart(cart);
+                cartItem.setProduct(product);
+                cartItem.setQuantity(quantity);
+                cartItem.setUnitPrice(product.getPrice());
+            } else {
+                cartItem.setQuantity(quantity + cartItem.getQuantity() );
+            }
 
-        if(cartItem.getId() == null){
-            cartItem.setCart(cart);
-            cartItem.setProduct(product);
-            cartItem.setQuantity(quantity);
-            cartItem.setUnitPrice(product.getPrice());
-        } else {
-            cartItem.setQuantity(quantity + cartItem.getQuantity() );
+            cartItem.setTotalPrice();//update the total price which is equal to qte * unit price
+            cart.addItem(cartItem);
+            cart.setUser(user); //assign to user
+            cartItemRepository.save(cartItem); // persist on db
+            cartRepository.save(cart);// persist on db
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        cartItem.setTotalPrice();//update the total price which is equal to qte * unit price
-        cart.addItem(cartItem);
-        cartItemRepository.save(cartItem); // persist on db
-        cartRepository.save(cart);// persist on db
     }
 
     /**
@@ -78,9 +83,9 @@ public class CartItemServiceImpl implements ICartItemService {
      */
     @Override
     public void removeItemToCart(Long cartId, Long productId) {
-        CartDto cartDto = cartService.getCart(cartId); //get the current cart
+        Cart cart = cartMapper.toCartEntity(cartService.getCart(cartId)); //get the current cart
         CartItem itemToRemove =  cartItemMapper.toCartItemEntity(getCartItem(cartId, productId));//get cart's item
-        Cart cart = cartMapper.toCartEntity(cartDto);// convert to Entity
+     //   Cart cart = cartMapper.toCartEntity(cartDto);// convert to Entity
         cart.removeItem(itemToRemove); //drop item from cart
         cartRepository.save(cart);//persist cart on db
     }
@@ -93,8 +98,7 @@ public class CartItemServiceImpl implements ICartItemService {
     @Override
     public void updateItemToCart(Long cartId, Long productId, int quantity) {
         //get the current cart
-        CartDto cartDto = cartService.getCart(cartId);
-        Cart cart = cartMapper.toCartEntity(cartDto);
+        Cart cart = cartMapper.toCartEntity( cartService.getCart(cartId));
         //update quantity from form
          cart.getItems().stream()
                  .filter(item -> item.getProduct().getId().equals(productId))
@@ -105,7 +109,7 @@ public class CartItemServiceImpl implements ICartItemService {
                               item.setUnitPrice(productService.getById(productId).getPrice());
                               item.setTotalPrice();
                           },
-                         ()-> { throw new ApiRequestException("product not found"); }
+                         ()-> { throw new EntityNotFoundException("product not found"); }
                  );
             //get calculed totalamount after update quantity
             BigDecimal totalAmount = cart.getTotalAmount();
@@ -123,6 +127,6 @@ public class CartItemServiceImpl implements ICartItemService {
                 .stream()
                 .filter(item-> item.getProduct().getId().equals(productId))
                 .findFirst()
-                .orElseThrow(()-> new ApiRequestException("item  not found"));
+                .orElseThrow(()-> new EntityNotFoundException(String.format("item  not found with provided product ID  %s and cart ID:%S" , productId,cartId)));
     }
 }

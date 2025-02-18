@@ -2,9 +2,10 @@ package com.niangsa.dream_shop.service.user;
 
 import com.niangsa.dream_shop.dto.UserDto;
 import com.niangsa.dream_shop.entities.User;
-import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.UserMapper;
 import com.niangsa.dream_shop.repositories.UserRepository;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,6 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
-    private static final String ERROR_NOT_FOUND_MESSAGE ="User not found";
     private final UserMapper userMapper;
     /**
      * check if user already exist otherwise we registered in db
@@ -38,7 +38,7 @@ public class UserServiceImpl implements IUserService {
                     User user = userRepository.save(userMapper.toUserEntity(savedUserDto));
                     return  userMapper.toUserDto(user);
                 } )
-                .orElseThrow(()-> new ApiRequestException(String.format("User already exist with provided email :%s!!!",userDto.getEmail())));
+                .orElseThrow(()-> new EntityExistsException(String.format("User already exist with provided email :%s!!!",userDto.getEmail())));
     }
 
     /**
@@ -50,7 +50,7 @@ public class UserServiceImpl implements IUserService {
     public UserDto getById(Long id) {
         return userRepository.findById(id)
                 .map(userMapper::toUserDto)
-                .orElseThrow(()-> new ApiRequestException(ERROR_NOT_FOUND_MESSAGE));
+                .orElseThrow(()-> new EntityNotFoundException("No user were found  provided id:"+id));
     }
 
     /**
@@ -60,7 +60,7 @@ public class UserServiceImpl implements IUserService {
     public void delete(Long id) {
      userRepository.findById(id)
                 .ifPresentOrElse(userRepository::delete, ()-> {
-                    throw  new ApiRequestException(ERROR_NOT_FOUND_MESSAGE);
+                    throw  new EntityNotFoundException("No user were found  provided id:"+id);
                 });
     }
 
@@ -76,7 +76,7 @@ public class UserServiceImpl implements IUserService {
                     existingUser.setPassword(userDto.getPassword());
                     return userRepository.save(existingUser);
                 })
-                .orElseThrow(()-> new ApiRequestException(ERROR_NOT_FOUND_MESSAGE));
+                .orElseThrow(()-> new EntityNotFoundException("No user were found  provided id:"+id));
         return userMapper.toUserDto(user);
     }
 

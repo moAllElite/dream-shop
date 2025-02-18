@@ -3,10 +3,12 @@ package com.niangsa.dream_shop.service.product;
 import com.niangsa.dream_shop.dto.ProductDto;
 import com.niangsa.dream_shop.entities.Category;
 import com.niangsa.dream_shop.entities.Product;
+import com.niangsa.dream_shop.exceptions.ApiException;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.ProductMapper;
 import com.niangsa.dream_shop.repositories.CategoryRepository;
 import com.niangsa.dream_shop.repositories.ProductRepository;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,11 @@ public class ProductServiceImpl implements IProductService {
      *             3-       if no , then save as new category
      */
     @Override
-    public ProductDto saveProduct(ProductDto request) {
+    public ProductDto saveProduct(ProductDto request){
+        if(productExists(request.getName(),request.getBrand())){
+            throw new EntityExistsException(
+                    String.format("Product name already exists with provided name %s and brand %s",request.getName(),request.getBrand()));
+        }
         String categoryName = request.getCategory().getName();
         Category categoryEntity = Optional.ofNullable(categoryRepository.findByName(categoryName))
                 .orElseGet(
@@ -56,9 +62,10 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public ProductDto getById(Long id) {
-        Product product = productRepository.findById(id)
+       return    productRepository.findById(id)
+                .map(productMapper::toProductDto)
                 .orElseThrow(()-> new EntityNotFoundException("No product was found with id:" +id));
-        return productMapper.toProductDto(product);
+
     }
 
     /**
@@ -110,7 +117,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductDto> getProductByBrand(String brand) {
         return productRepository.findProductsByBrand(brand)
-                .orElseThrow(()-> new ApiRequestException("No product found with name: " + brand))
+                .orElseThrow(()-> new EntityNotFoundException("No product found with name: " + brand))
                 .stream().map(productMapper::toProductDto)
                 .toList();
     }
@@ -149,7 +156,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductDto> getProductByName(String name) {
         return productRepository.findByName(name)
-                .orElseThrow(()-> new ApiRequestException("No product found with name: " + name))
+                .orElseThrow(()-> new EntityNotFoundException("No product found with name: " + name))
                 .stream().map(productMapper::toProductDto)
                 .toList();
     }
@@ -164,5 +171,8 @@ public class ProductServiceImpl implements IProductService {
         return productRepository.findByBrandAndName(brand, name)
                 .stream().map(productMapper::toProductDto)
                 .toList();
+    }
+    private boolean productExists(String name, String brand) {
+     return    productRepository.existsByNameAndBrand(name,brand);
     }
 }

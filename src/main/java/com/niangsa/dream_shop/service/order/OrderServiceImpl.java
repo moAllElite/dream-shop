@@ -1,10 +1,9 @@
 package com.niangsa.dream_shop.service.order;
 
-import com.niangsa.dream_shop.dto.CartDto;
 import com.niangsa.dream_shop.dto.OrderDto;
-import com.niangsa.dream_shop.dto.OrderItemDto;
 import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.Order;
+import com.niangsa.dream_shop.entities.OrderItem;
 import com.niangsa.dream_shop.entities.Product;
 import com.niangsa.dream_shop.enums.OrderStatuts;
 import com.niangsa.dream_shop.exceptions.ApiRequestException;
@@ -18,6 +17,7 @@ import com.niangsa.dream_shop.repositories.ProductRepository;
 import com.niangsa.dream_shop.service.cart.ICartService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -42,16 +42,19 @@ public class OrderServiceImpl implements IOrderService {
      * @param userId long
      */
     @Override
-    public OrderDto placeOrder(Long userId) {
-        Cart cart= cartService.getCartByUserId(userId);
-        CartDto cartDto= cartMapper.toCartDto(cart);
-        OrderDto orderDto = createOrder(cartDto);
-        List<OrderItemDto> orderItemDtos = createOrderItems(orderDto,cartDto) ;
-        orderDto.setTotalAmount(calculateToAmount(orderItemDtos));//update total amount
-        orderDto.setOrderItems(new HashSet<>(orderItemDtos));
-        Order savedOrder = orderRepository.save(orderMapper.toOrderEntity(orderDto));  //persist order
-       // cartService.clearCart(cartDto.getId());//clear the cart
-        return orderMapper.toOrderDto(savedOrder);
+    public void placeOrder(Long userId) {
+        try {
+            Cart cart= cartService.getCartByUserId(userId);
+            Order order = createOrder(cart);
+            List<OrderItem> orderItem = createOrderItems(order,cart) ;
+            System.out.println(order.getOrderDate());
+            order.setTotalAmount(calculateToAmount(orderItem));//update total amount
+            order.setOrderItems(new HashSet<>(orderItem));
+            orderRepository.save(order);  //persist order
+            cartService.clearCart(cart.getId());//clear the cart
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage() );
+        }
     }
 
     /**
@@ -67,21 +70,17 @@ public class OrderServiceImpl implements IOrderService {
 
     /**
      *
-     * @param orderDto from form
-     * @param cartDto from form
+     * @param order from form
+     * @param cart from form
      * @return Order
      */
-    private List<OrderItemDto> createOrderItems(OrderDto orderDto, CartDto cartDto){
-       return cartDto.getItems().stream()
+    private List<OrderItem> createOrderItems(Order order, Cart cart){
+       return cart.getItems().stream()
                .map(cartItem-> {
-                   Product product = productMapper.toProductEntity(cartItem.getProduct());
+                   Product product = cartItem.getProduct();
                    product.setInventory(product.getInventory() - cartItem.getQuantity());
                    productRepository.save(product);
-                   return OrderItemDto.builder()
-                           .product(product)
-                           .quantity(cartItem.getQuantity())
-                           .orderDto(orderDto)
-                           .build();
+                   return  new  OrderItem(product, order, cartItem.getQuantity(),cartItem.getUnitPrice());
                } )
                .toList();
 
@@ -90,20 +89,19 @@ public class OrderServiceImpl implements IOrderService {
 
     /**
      * create new order from cartdto
-     * @param cartDto from form
+     * @param cart from form
      * @return orderDto
      */
-    private OrderDto createOrder(CartDto cartDto){
-        return  OrderDto.builder()
-                .orderStatuts(OrderStatuts.PENDING)
-                .orderDate(LocalDate.now())
-                .user(cartDto.getUser())
-                .build();
+    private Order createOrder(Cart cart){
+        Order order = new Order();
+        order.setOrderDate(LocalDate.now());
+        order.setOrderStatuts(OrderStatuts.PENDING);
+        order.setUser(cart.getUser());
+        return  order;
     }
 
-    public BigDecimal calculateToAmount(List<OrderItemDto> orderItemList){
+    public BigDecimal calculateToAmount(List<OrderItem> orderItemList){
         return   orderItemList.stream()
-                .map(orderItemMapper::toOrderItemEntity)
                 .map(item->item.getPrice().multiply(new BigDecimal (item.getQuantity())))
                 .reduce(BigDecimal.ZERO,BigDecimal::add);
     }
@@ -115,7 +113,6 @@ public class OrderServiceImpl implements IOrderService {
      */
     @Override
     public List<OrderDto> getUserOrders(Long userId){
-        return  orderRepository.findByUserId(userId)
-                .stream().map(orderMapper::toOrderDto).toList();
+        return  orderRepository.findByUserId(userId).stream().map(orderMapper::toOrderDto).toList();
     }
 }

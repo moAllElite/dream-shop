@@ -30,18 +30,14 @@ public class ProductController {
 
     /***
      * create new product
-     * @param product
+     * @param productDto
      * on success Http status 201
      */
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto product){
-        try {
-          productService.saveProduct(product);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Created success ", null));
-        } catch (Exception e) {
-            return  ResponseEntity.status(INTERNAL_ERROR_SERVER).body(new ApiResponse("Create failed", e.getMessage()));
-        }
+    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto){
+          productService.saveProduct(productDto);
+          return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Created success ", productDto.getId()));
     }
 
 
