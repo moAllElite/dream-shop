@@ -7,6 +7,8 @@
     import lombok.Setter;
     import org.hibernate.annotations.NaturalId;
 
+    import java.util.Collection;
+    import java.util.HashSet;
     import java.util.List;
 
     @Getter
@@ -28,4 +30,11 @@
         private Cart cart;
         @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
         private List<Order> orders;
+        @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
+        @JoinTable(
+                name = "user_roles",
+                joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"),
+                inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName = "id")
+        )
+        private Collection<Role> roles = new HashSet<>();
     }

@@ -34,7 +34,7 @@ public class ProductServiceImpl implements IProductService {
     public ProductDto saveProduct(ProductDto request){
         if(productExists(request.getName(),request.getBrand())){
             throw new EntityExistsException(
-                    String.format("Product name already exists with provided name %s and brand %s",request.getName(),request.getBrand()));
+                    String.format("Product name already exists with provided name %s and brand %s, you may update this product instead",request.getName(),request.getBrand()));
         }
         String categoryName = request.getCategory().getName();
         Category categoryEntity = Optional.ofNullable(categoryRepository.findByName(categoryName))
@@ -48,9 +48,6 @@ public class ProductServiceImpl implements IProductService {
        Product entity= productRepository.save(productMapper.toProductEntity(request));
        return productMapper.toProductDto(entity);
     }
-
-
-
 
     /**
      * search product by id
