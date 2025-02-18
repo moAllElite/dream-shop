@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
+@Builder
 @Getter
 @Setter
 @Entity
@@ -24,7 +24,7 @@ public class Order {
     private OrderStatuts orderStatuts;
     private BigDecimal totalAmount;
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL,orphanRemoval = true)
-    private Set<OrderItem> orderItems;
+    private Set<OrderItem> items = new HashSet<>();
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

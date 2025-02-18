@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -16,6 +15,5 @@ public class OrderDto {
     private LocalDate orderDate;
     private OrderStatuts orderStatuts;
     private BigDecimal totalAmount;
-    private Set<OrderItemDto> orderItems ;
-    private UserDto user;
+    private Set<OrderItemDto> items ;
 }

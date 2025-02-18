@@ -3,8 +3,6 @@ package com.niangsa.dream_shop.service.product;
 import com.niangsa.dream_shop.dto.ProductDto;
 import com.niangsa.dream_shop.entities.Category;
 import com.niangsa.dream_shop.entities.Product;
-import com.niangsa.dream_shop.exceptions.ApiException;
-import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.ProductMapper;
 import com.niangsa.dream_shop.repositories.CategoryRepository;
 import com.niangsa.dream_shop.repositories.ProductRepository;
@@ -67,6 +65,11 @@ public class ProductServiceImpl implements IProductService {
                 .orElseThrow(()-> new EntityNotFoundException("No product was found with id:" +id));
 
     }
+    public Product getOrderById(Long id) {
+        return    productRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("No product was found with id:" +id));
+    }
+
 
     /**
      * delete product by id

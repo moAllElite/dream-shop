@@ -2,7 +2,6 @@ package com.niangsa.dream_shop.service.cart;
 
 import com.niangsa.dream_shop.dto.CartDto;
 import com.niangsa.dream_shop.dto.CartItemDto;
-import com.niangsa.dream_shop.dto.UserDto;
 import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.CartItem;
 import com.niangsa.dream_shop.entities.Product;
@@ -45,7 +44,7 @@ public class CartItemServiceImpl implements ICartItemService {
     private final UserMapper userMapper;
     @Override
     public void addItemToCart( Long productId,Long userId, int quantity) {
-        try {
+
             User user= userMapper.toUserEntity(userService.getById(userId));
             Long    cartId = cartService.initializeCart(user);
             CartDto cartDto = cartService.getCart(cartId);
@@ -71,9 +70,7 @@ public class CartItemServiceImpl implements ICartItemService {
             cart.setUser(user); //assign to user
             cartItemRepository.save(cartItem); // persist on db
             cartRepository.save(cart);// persist on db
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
     /**

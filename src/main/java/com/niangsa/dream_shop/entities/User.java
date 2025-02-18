@@ -24,7 +24,7 @@
         @NaturalId
         private String email;
         private String password;
-        @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+        @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
         private Cart cart;
         @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
         private List<Order> orders;

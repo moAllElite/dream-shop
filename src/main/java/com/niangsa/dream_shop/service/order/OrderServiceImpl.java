@@ -1,23 +1,17 @@
 package com.niangsa.dream_shop.service.order;
 
 import com.niangsa.dream_shop.dto.OrderDto;
-import com.niangsa.dream_shop.entities.Cart;
-import com.niangsa.dream_shop.entities.Order;
-import com.niangsa.dream_shop.entities.OrderItem;
-import com.niangsa.dream_shop.entities.Product;
+import com.niangsa.dream_shop.entities.*;
 import com.niangsa.dream_shop.enums.OrderStatuts;
-import com.niangsa.dream_shop.exceptions.ApiRequestException;
-import com.niangsa.dream_shop.mappers.CartMapper;
-import com.niangsa.dream_shop.mappers.OrderItemMapper;
-import com.niangsa.dream_shop.mappers.OrderMapper;
-import com.niangsa.dream_shop.mappers.ProductMapper;
+import com.niangsa.dream_shop.mappers.*;
 import com.niangsa.dream_shop.repositories.OrderItemRepository;
 import com.niangsa.dream_shop.repositories.OrderRepository;
 import com.niangsa.dream_shop.repositories.ProductRepository;
 import com.niangsa.dream_shop.service.cart.ICartService;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,7 +28,8 @@ public class OrderServiceImpl implements IOrderService {
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
     private final ICartService cartService;
-    private final OrderItemMapper orderItemMapper;
+    private final UserMapper userMapper;
+
     private final CartMapper cartMapper;
     /**
      * Persist order on db
@@ -49,12 +44,26 @@ public class OrderServiceImpl implements IOrderService {
             List<OrderItem> orderItem = createOrderItems(order,cart) ;
             System.out.println(order.getOrderDate());
             order.setTotalAmount(calculateToAmount(orderItem));//update total amount
-            order.setOrderItems(new HashSet<>(orderItem));
+            order.setItems(new HashSet<>(orderItem));
+            order.setUser(cart.getUser());
+
             orderRepository.save(order);  //persist order
             cartService.clearCart(cart.getId());//clear the cart
         } catch (Exception e) {
-            throw new ApiRequestException(e.getMessage() );
+            throw new EntityExistsException(e.getMessage() );
         }
+    }
+    /**
+     * get all orders by user
+     *
+     * @param userId long
+     * @return List of orders by user
+     */
+    @Override
+    public List<OrderDto> getUserOrders(Long userId){
+        return orderRepository.findByUserId(userId)
+                .stream().map(orderMapper::toOrderDto)
+                .toList();
     }
 
     /**
@@ -65,7 +74,7 @@ public class OrderServiceImpl implements IOrderService {
     public OrderDto getOrder(Long orderId) {
         return orderRepository.findById(orderId)
                 .map(orderMapper::toOrderDto)
-                .orElseThrow(()-> new ApiRequestException("Order not found"));
+                .orElseThrow(()-> new EntityNotFoundException("Order not found"));
     }
 
     /**
@@ -83,8 +92,6 @@ public class OrderServiceImpl implements IOrderService {
                    return  new  OrderItem(product, order, cartItem.getQuantity(),cartItem.getUnitPrice());
                } )
                .toList();
-
-
     }
 
     /**
@@ -96,7 +103,8 @@ public class OrderServiceImpl implements IOrderService {
         Order order = new Order();
         order.setOrderDate(LocalDate.now());
         order.setOrderStatuts(OrderStatuts.PENDING);
-        order.setUser(cart.getUser());
+        User user = cart.getUser();
+        order.setUser(user);
         return  order;
     }
 
@@ -106,13 +114,5 @@ public class OrderServiceImpl implements IOrderService {
                 .reduce(BigDecimal.ZERO,BigDecimal::add);
     }
 
-    /**
-     * get all orders by user
-     * @param userId long
-     * @return List of orders by user
-     */
-    @Override
-    public List<OrderDto> getUserOrders(Long userId){
-        return  orderRepository.findByUserId(userId).stream().map(orderMapper::toOrderDto).toList();
-    }
+
 }
