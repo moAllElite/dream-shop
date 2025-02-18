@@ -4,10 +4,13 @@ import com.niangsa.dream_shop.dto.UserDto;
 import com.niangsa.dream_shop.entities.User;
 import com.niangsa.dream_shop.mappers.UserMapper;
 import com.niangsa.dream_shop.repositories.UserRepository;
+import com.niangsa.dream_shop.security.user.ShopUserDetails;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -88,5 +91,15 @@ public class UserServiceImpl implements IUserService  {
     public List<UserDto> getAll() {
         return userRepository.findAll().stream().map(userMapper::toUserDto)
                 .toList();
+    }
+
+    /**
+     * @param email
+     * @return User informations
+     */
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("No user found with provided email:"+email));
+        return ShopUserDetails.buildUserDetail(user);
     }
 }
