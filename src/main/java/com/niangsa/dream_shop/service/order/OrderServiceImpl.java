@@ -46,7 +46,6 @@ public class OrderServiceImpl implements IOrderService {
             order.setTotalAmount(calculateToAmount(orderItem));//update total amount
             order.setItems(new HashSet<>(orderItem));
             order.setUser(cart.getUser());
-
             orderRepository.save(order);  //persist order
             cartService.clearCart(cart.getId());//clear the cart
         } catch (Exception e) {

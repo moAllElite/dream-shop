@@ -1,61 +1,75 @@
 package com.niangsa.dream_shop.security.jwt;
 
-import com.niangsa.dream_shop.security.user.ShopUserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 
 import javax.crypto.SecretKey;
-import java.time.Instant;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 @Component
-public class JwtUtils implements IJwtUtils {
+public class JwtService implements IJwtService {
     @Value("${auth.token.jwtSecret}")
     private String jwtSecret;
     @Value("${auth.token.expirationInMils}")
-    private int expirationTime;
+    private long expirationTime;
 
     /**
-     * @param authentication from Authentication
-     * @return jwt
+     * @param userDetails build from User's infos
+     * @return token
      */
     @Override
-    public String generateToken(Authentication authentication) {
-        ShopUserDetails principalUser = (ShopUserDetails) authentication.getPrincipal();
-        List<String> roles = principalUser.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
+    public String createToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>() ,userDetails);
+    }
+    /**
+     *  Generate a Bearer token
+     * @param extractClaim Map of String & Object
+     * @param userDetails from
+     * @return token
+     */
+
+    private String generateToken(Map<String, Object> extractClaim, UserDetails userDetails) {
         return Jwts.builder()
-                .subject(principalUser.getUsername())
-                .issuer(principalUser.getEmail())
-                .claim("roles", roles)
-                .claim("username",principalUser.getUsername())
+                .subject(userDetails.getUsername())
+                .claims(extractClaim)
+                .issuer(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date((new Date()).getTime()+ expirationTime))
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .claim("roles", userDetails.getAuthorities())
                 .signWith(signInKey())
                 .compact();
     }
 
     /**
      * extract username from the token
-     * @param token encrypt
+     * @param token encrypted
      * @return username
      */
     @Override
     public String getUsernameFromToken(String token) {
-       Claims  claims = Jwts.parser()
-               .verifyWith(signInKey())
-               .build()
-               .parseSignedClaims(jwtSecret)
-               .getPayload();
-        return claims.getSubject();
+       return extractClaim(token,Claims::getSubject);
+    }
+
+    @Override
+    public <T> T extractClaim(String token, Function<Claims, T> claimResolver){
+        Claims claims = extractAllClaims(token);
+        return claimResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token){
+        return Jwts.parser()
+                .verifyWith(signInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     /**
@@ -75,20 +89,19 @@ public class JwtUtils implements IJwtUtils {
         }
     }
 
+
     /**
      * @param token String
      * @return boolean
      */
-    @Override
-    public boolean isTokenvalid(String token) {
+
+    private boolean isTokenvalid(String token) {
         Date expirationDate = Jwts.parser()
                 .verifyWith(signInKey())
                 .build()
                 .parseSignedClaims(jwtSecret)
                 .getPayload().getExpiration();
-        Instant expirationInstant =expirationDate.toInstant();
-        int i = expirationInstant.compareTo(Instant.now());
-        return i != 0;
+        return  expirationDate.before(new Date());
     }
 
     private SecretKey signInKey() {

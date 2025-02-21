@@ -1,8 +1,6 @@
 package com.niangsa.dream_shop.security.config;
 
-import com.niangsa.dream_shop.repositories.UserRepository;
-import com.niangsa.dream_shop.security.jwt.IJwtUtils;
-import com.niangsa.dream_shop.security.user.ShopUserDetails;
+import com.niangsa.dream_shop.security.jwt.IJwtService;
 import com.niangsa.dream_shop.service.user.IUserService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -14,6 +12,7 @@ import lombok.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,10 +20,8 @@ import java.io.IOException;
 @AllArgsConstructor
 
 public class AuthenFilter extends OncePerRequestFilter {
-    private final ShopUserDetails userDetails;
     private final IUserService userService;
-    private IJwtUtils jwtUtils;
-    private final UserRepository userRepository;
+    private IJwtService jwtUtils;
     /**
      * @param request
      * @param response
@@ -44,8 +41,15 @@ public class AuthenFilter extends OncePerRequestFilter {
                     //extract username
                 String username = jwtUtils.getUsernameFromToken(jwtToken);
                 UserDetails user= userService.loadUserByUsername(username);// get user information base on username
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                //check if user exist in db & not connect
+                if(user != null && SecurityContextHolder.getContext().getAuthentication() ==null){
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                            user, null, user.getAuthorities()
+                    );
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    filterChain.doFilter(request,response);
+                }
             }
         } catch (JwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

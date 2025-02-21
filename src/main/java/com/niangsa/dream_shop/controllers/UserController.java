@@ -18,12 +18,6 @@ public class UserController {
     private final IUserService userService;
     private static final HttpStatus CREATED = HttpStatus.CREATED;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse> saveUser(@RequestBody UserDto userDto){
-        userService.createUser(userDto);
-        return ResponseEntity.status(CREATED).body(new ApiResponse("User save success",null));
-    }
-
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long userId){
         return ResponseEntity.ok(userService.getById(userId));

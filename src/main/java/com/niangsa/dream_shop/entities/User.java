@@ -1,26 +1,26 @@
     package com.niangsa.dream_shop.entities;
 
     import jakarta.persistence.*;
-    import lombok.AllArgsConstructor;
-    import lombok.Getter;
-    import lombok.NoArgsConstructor;
-    import lombok.Setter;
+    import lombok.*;
     import org.hibernate.annotations.NaturalId;
+    import org.springframework.security.core.GrantedAuthority;
+    import org.springframework.security.core.authority.SimpleGrantedAuthority;
+    import org.springframework.security.core.userdetails.UserDetails;
 
     import java.util.Collection;
     import java.util.HashSet;
     import java.util.List;
+    import java.util.stream.Collectors;
 
     @Getter
-    @Setter
+    @Setter@Builder
     @AllArgsConstructor
     @NoArgsConstructor
     @Entity
-    public class User  {
+    public class User implements UserDetails {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-        private String username;
         private String firstName;
         private String lastName;
         @NaturalId
@@ -37,4 +37,24 @@
                 inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName = "id")
         )
         private Collection<Role> roles = new HashSet<>();
+
+        /**
+         * @return Collection of GrantedAuthority
+         */
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            return  roles.stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getName()))
+                    .collect(Collectors.toList());
+        }
+
+        /**
+         * @return Email of User
+         */
+        @Override
+        public String getUsername() {
+            return email;
+        }
+
+
     }

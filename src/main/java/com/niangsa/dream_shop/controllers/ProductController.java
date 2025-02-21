@@ -3,6 +3,7 @@ package com.niangsa.dream_shop.controllers;
 import com.niangsa.dream_shop.dto.ProductDto;
 import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.product.IProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class ProductController {
 
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody ProductDto productDto){
+    public ResponseEntity<ApiResponse> update(@PathVariable Long id,@Valid @RequestBody ProductDto productDto){
         try {
             productService.update(id, productDto);
             return  ResponseEntity.ok().body(new ApiResponse("Updated success ", productDto));
