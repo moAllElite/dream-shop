@@ -96,12 +96,13 @@ public class JwtService implements IJwtService {
         Date expirationDate = Jwts.parser()
                 .verifyWith(signInKey())
                 .build()
-                .parseSignedClaims(jwtSecret)
+                .parseSignedClaims(token)
                 .getPayload().getExpiration();
         return  expirationDate.before(new Date());
     }
 
     private SecretKey signInKey() {
-       return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        byte[] encodedKey = Decoders.BASE64.decode(jwtSecret);
+       return Keys.hmacShaKeyFor(encodedKey);
     }
 }

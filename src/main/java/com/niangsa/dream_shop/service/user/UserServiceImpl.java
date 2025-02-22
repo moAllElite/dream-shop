@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements IUserService  {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
     private final IJwtService jwtService;
     /**
      * check if user already exist otherwise we registered in db
@@ -113,9 +115,10 @@ public class UserServiceImpl implements IUserService  {
        return userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("No user found with provided email:"+email));
     }
 
-    private static User buildUser(AddUserRequest request, Role role) {
+    private User buildUser(AddUserRequest request, Role role) {
         Collection<Role>roleCollection = new HashSet<>();
         roleCollection.add(role);
+        String hashedPassword = this.passwordEncoder.encode(request.password());
         Collection<Role> collect = new ArrayList<>(roleCollection);
         return User.builder()
                 .roles(collect)
@@ -123,7 +126,7 @@ public class UserServiceImpl implements IUserService  {
                 .firstName(request.firstName())
                 .lastName(request.lastName())
                 .roles(roleCollection)
-                .password(request.password())
+                .password(hashedPassword)
                 .build();
     }
 
