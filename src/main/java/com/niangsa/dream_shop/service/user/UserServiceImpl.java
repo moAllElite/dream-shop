@@ -1,8 +1,10 @@
 package com.niangsa.dream_shop.service.user;
 
 import com.niangsa.dream_shop.dto.UserDto;
+import com.niangsa.dream_shop.entities.Role;
 import com.niangsa.dream_shop.entities.User;
 import com.niangsa.dream_shop.mappers.UserMapper;
+import com.niangsa.dream_shop.repositories.RoleRepository;
 import com.niangsa.dream_shop.repositories.UserRepository;
 import com.niangsa.dream_shop.requests.AddUserRequest;
 import com.niangsa.dream_shop.requests.AuthenticationResquest;
@@ -14,8 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @AllArgsConstructor
@@ -23,6 +24,7 @@ import java.util.Optional;
 public class UserServiceImpl implements IUserService  {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final RoleRepository roleRepository;
     private final IJwtService jwtService;
     /**
      * check if user already exist otherwise we registered in db
@@ -31,14 +33,11 @@ public class UserServiceImpl implements IUserService  {
      */
 
     public String registerUser( AddUserRequest request) {
+        Role role = existingRole(request.role());
         UserDetails userDetails= Optional.of(request)
                 .filter(user -> !userRepository.existsByEmail(request.email()))
                 .map(newUserDto -> {
-                    User savedUser = User.builder().email(request.email())
-                            .password(request.password())
-                            .lastName(request.lastName())
-                            .firstName(request.firstName())
-                            .build();
+                    User savedUser =  buildUser(request,role);
                  return    userRepository.save(savedUser);
                 })
                 .orElseThrow(
@@ -112,5 +111,24 @@ public class UserServiceImpl implements IUserService  {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
        return userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("No user found with provided email:"+email));
+    }
+
+    private static User buildUser(AddUserRequest request, Role role) {
+        Collection<Role>roleCollection = new HashSet<>();
+        roleCollection.add(role);
+        Collection<Role> collect = new ArrayList<>(roleCollection);
+        return User.builder()
+                .roles(collect)
+                .email(request.email())
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .roles(roleCollection)
+                .password(request.password())
+                .build();
+    }
+
+    private Role existingRole(String roleName){
+        return  roleRepository.findRoleByName(roleName)
+                .orElseGet(()-> roleRepository.save(new Role(roleName)));
     }
 }

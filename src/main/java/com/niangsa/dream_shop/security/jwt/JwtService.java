@@ -77,13 +77,10 @@ public class JwtService implements IJwtService {
      * @return boolean
      */
     @Override
-    public boolean validateToken(String token) {
+    public boolean isTokenValidate(String token, UserDetails userDetails) {
         try {
-            Jwts.parser()
-                    .verifyWith(signInKey())
-                    .build()
-                    .parseSignedClaims(token);
-            return true;
+            String userEmail = getUsernameFromToken(token);
+            return userEmail.equals(userDetails.getUsername()) && !isTokenExpired(token);
         } catch (ExpiredJwtException |MalformedJwtException  |IllegalArgumentException | UnsupportedJwtException e) {
             throw new JwtException(e.getMessage());
         }
@@ -95,7 +92,7 @@ public class JwtService implements IJwtService {
      * @return boolean
      */
 
-    private boolean isTokenvalid(String token) {
+    private boolean isTokenExpired(String token) {
         Date expirationDate = Jwts.parser()
                 .verifyWith(signInKey())
                 .build()
