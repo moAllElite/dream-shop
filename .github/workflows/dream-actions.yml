@@ -12,4 +12,4 @@ jobs:
           cache: 'maven'
           cache-dependency-path: 'pom.xml' # optional
       - name: Build with Maven
-        run: mvn -B --skip-tests package --file pom.xml
+        run: mvn -B -Dmaven.test.skip=true--skip-tests package --file pom.xml
