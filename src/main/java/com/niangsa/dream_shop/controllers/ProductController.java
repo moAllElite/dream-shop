@@ -5,9 +5,12 @@ import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.product.IProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -20,8 +23,8 @@ public class ProductController {
     private  final IProductService productService;
 
     /**
-     * get all informations about products
-     * @return List<ProductDTO>
+     * get all information's about products
+     * @return List of Products
      */
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -71,8 +74,8 @@ public class ProductController {
 
     /**
      *
-     * @param name string
-     * @param brand string
+     * @param name's product
+     * @param brand's name
      * @return product  counter
      */
 
@@ -105,5 +108,14 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable Long productId){
         return  ResponseEntity.ok(productService.getById(productId));
+    }
+
+    @GetMapping("/filter-by")
+    public ResponseEntity<Page<ProductDto>> filterProductByMinimumAndMaximumPrice(
+            @RequestParam(defaultValue = "5",required = false) int pageSize,
+            @RequestParam BigDecimal minPrice,
+            @RequestParam BigDecimal maxPrice
+    ){
+        return  ResponseEntity.ok(productService.getProductByMinMaxPrice(minPrice, maxPrice, pageSize));
     }
 }

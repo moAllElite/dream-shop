@@ -9,8 +9,13 @@ import com.niangsa.dream_shop.repositories.ProductRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +23,9 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ProductServiceImpl implements IProductService {
-    //inject repository & mappers
+    /**
+     inject repositories & mappers*     */
+
     private final ProductRepository productRepository;
     private final   ProductMapper productMapper;
     private final CategoryRepository categoryRepository;
@@ -27,8 +34,8 @@ public class ProductServiceImpl implements IProductService {
      *
      * @param  request from formular
      *      1- check if category is found on DB
-     *           2-         if yes set it as new category
-     *             3-       if no , then save as new category
+     *     2-         if yes set it as new category
+     *     3-       if no , then save as new category
      */
     @Override
     public ProductDto saveProduct(ProductDto request){
@@ -62,10 +69,8 @@ public class ProductServiceImpl implements IProductService {
                 .orElseThrow(()-> new EntityNotFoundException("No product was found with id:" +id));
 
     }
-    public Product getOrderById(Long id) {
-        return    productRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("No product was found with id:" +id));
-    }
+
+
 
 
     /**
@@ -83,7 +88,7 @@ public class ProductServiceImpl implements IProductService {
 
     /**
      *
-     * @param  id Long
+     * @param  id of product
      * @param productDto from formular
      * @return ProductDto
      */
@@ -99,7 +104,7 @@ public class ProductServiceImpl implements IProductService {
 
     /**
      *
-     * @return  List of  ProductDto in Database
+     * @return  List of  Products in Database
      */
     @Override
     public List<ProductDto> getAll() {
@@ -125,7 +130,7 @@ public class ProductServiceImpl implements IProductService {
     /***
      * search products by category
      * @param category name
-     * @return List of ProductDTO
+     * @return List of Product
      */
     @Override
     public List<ProductDto> getProductByCategory(String category) {
@@ -151,7 +156,7 @@ public class ProductServiceImpl implements IProductService {
     /**
      * search product by name
      * @param name string
-     * @return ProductDto
+     * @return List of products
      */
     @Override
     public List<ProductDto> getProductByName(String name) {
@@ -161,17 +166,53 @@ public class ProductServiceImpl implements IProductService {
                 .toList();
     }
 
+    /**
+     *
+     * @param brand of product
+     * @param name of product
+     * @return the length of a specific product
+     */
     @Override
     public Long countByBrandAndName(String brand, String name) {
         return productRepository.countByBrandAndName(brand,name);
     }
 
+
+    /**
+     *
+     * @param brand of product
+     * @param name of product
+     * @return List of products by name and brand
+     */
     @Override
     public List<ProductDto> getProductByNameAndBrand(String brand, String name) {
         return productRepository.findByBrandAndName(brand, name)
                 .stream().map(productMapper::toProductDto)
                 .toList();
     }
+
+    /**
+     *
+     * @param minPrice of product
+     * @param maxPrice of product
+     * @param pageSize number of item which show
+     * @return List of product following a range of price
+     */
+    @Override
+    public Page<ProductDto> getProductByMinMaxPrice(BigDecimal minPrice, BigDecimal maxPrice, int pageSize) {
+        Pageable firstPage = PageRequest.of(0, pageSize);
+        List<ProductDto> productList =  productRepository.findByPriceBetween(minPrice,maxPrice)
+                .stream().map(productMapper::toProductDto).toList();
+        return new PageImpl<>(productList,firstPage,productList.size());
+
+    }
+
+    /**
+     * check if product already exist
+     * @param name of the product
+     * @param brand of the product
+     * @return True if product is already registered otherwise False
+     */
     private boolean productExists(String name, String brand) {
      return    productRepository.existsByNameAndBrand(name,brand);
     }

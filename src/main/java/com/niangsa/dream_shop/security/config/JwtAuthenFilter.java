@@ -41,7 +41,7 @@ public class JwtAuthenFilter extends OncePerRequestFilter {
             if(StringUtils.hasText(jwtToken) ){
                     //extract username
                 String username = jwtUtils.getUsernameFromToken(jwtToken);
-                UserDetails userDetails= userService.loadUserByUsername(username);// get user information base on username
+                UserDetails userDetails = userService.loadUserByUsername(username);// get user information base on username
                 //check if user exist in db & not connect
                 if(userDetails != null && SecurityContextHolder.getContext().getAuthentication() ==null){
                     if(jwtUtils.isTokenValidate(jwtToken,userDetails)){
