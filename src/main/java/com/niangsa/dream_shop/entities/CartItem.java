@@ -20,7 +20,7 @@ public class CartItem {
     private int quantity;
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "cart_id")
     private Cart cart;
     @ManyToOne()

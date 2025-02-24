@@ -20,12 +20,12 @@ public class CartItemController {
     private final ICartService cartService;
     @PostMapping("/item/add")
     public ResponseEntity<ApiResponse> addItemToCart(
-            @RequestParam(required = false) Long cartId,
             @RequestParam Long productId,
+            @RequestParam Long userId,
             @RequestParam int quantity
     ){
 
-        cartItemService.addItemToCart(cartId,productId,quantity);
+        cartItemService.addItemToCart(productId,userId,quantity);
         return  ResponseEntity.status(CREATED).body(new ApiResponse("Item successfully added!",null));
     }
 
