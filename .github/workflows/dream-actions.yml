@@ -8,5 +8,8 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'corretto' # See 'Supported distributions' for available options
-          java-version: '17'# version
-      - run: java DreamShopApplication.java
+          java-version: '17'
+          cache: 'maven'
+          cache-dependency-path: 'dream-shop/pom.xml' # optional
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
