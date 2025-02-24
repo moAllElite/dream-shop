@@ -3,10 +3,14 @@ package com.niangsa.dream_shop.controllers;
 import com.niangsa.dream_shop.dto.ProductDto;
 import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.product.IProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @CrossOrigin("*")
@@ -19,8 +23,8 @@ public class ProductController {
     private  final IProductService productService;
 
     /**
-     * get all informations about products
-     * @return List<ProductDTO>
+     * get all information's about products
+     * @return List of Products
      */
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
@@ -30,23 +34,19 @@ public class ProductController {
 
     /***
      * create new product
-     * @param product
+     * @param productDto
      * on success Http status 201
      */
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto product){
-        try {
-          productService.saveProduct(product);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Created success ", null));
-        } catch (Exception e) {
-            return  ResponseEntity.status(INTERNAL_ERROR_SERVER).body(new ApiResponse("Create failed", e.getMessage()));
-        }
+    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto){
+          productService.saveProduct(productDto);
+          return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Created success ", productDto.getId()));
     }
 
 
     @PutMapping("/{id}/update")
-    public ResponseEntity<ApiResponse> update(@PathVariable Long id, @RequestBody ProductDto productDto){
+    public ResponseEntity<ApiResponse> update(@PathVariable Long id,@Valid @RequestBody ProductDto productDto){
         try {
             productService.update(id, productDto);
             return  ResponseEntity.ok().body(new ApiResponse("Updated success ", productDto));
@@ -74,8 +74,8 @@ public class ProductController {
 
     /**
      *
-     * @param name string
-     * @param brand string
+     * @param name's product
+     * @param brand's name
      * @return product  counter
      */
 
@@ -108,5 +108,14 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable Long productId){
         return  ResponseEntity.ok(productService.getById(productId));
+    }
+
+    @GetMapping("/prices")
+    public ResponseEntity<Page<ProductDto>> filterProductByMinimumAndMaximumPrice(
+            @RequestParam(defaultValue = "5",required = false) int pageSize,
+            @RequestParam(name = "min") BigDecimal minPrice,
+            @RequestParam(name = "max") BigDecimal maxPrice
+    ){
+        return  ResponseEntity.ok(productService.getProductByMinMaxPrice(minPrice, maxPrice, pageSize));
     }
 }
