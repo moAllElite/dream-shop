@@ -29,16 +29,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         r-> {
-                            r.requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll();
+                            r.requestMatchers(
+                                    "/auth/**",
+                                    "/api-docs/**",
+                                    "/swagger-ui/**",
+                                    "/swagger-ui.html",
+                                    "/swagger-resources/**",
+                                    "/webjars/**"
+                            ).permitAll();
                         }
                 )
-                .authorizeHttpRequests(
-                        r-> {
-                            r.anyRequest().authenticated();}
-                )
+                .authorizeHttpRequests(r-> {r.anyRequest().authenticated();})
                 .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(authenFilter, UsernamePasswordAuthenticationFilter.class)

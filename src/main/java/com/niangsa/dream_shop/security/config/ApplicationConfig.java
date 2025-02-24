@@ -12,6 +12,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -40,5 +43,19 @@ public class ApplicationConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
         return  authConfiguration.getAuthenticationManager();
+    }
+
+    /**
+     * Allow all following methods :GET, POST, PUT, DELETE,PATCH
+     * & allow all origins
+     * @return cors config
+     */
+    @Bean
+    public CorsConfiguration corsConfiguration(){
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(List.of("*"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE","PATCH"));
+        // Remove .cors(AbstractHttpConfigurer::disable) and add:
+       return corsConfiguration;
     }
 }
