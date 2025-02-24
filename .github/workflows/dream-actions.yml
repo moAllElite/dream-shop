@@ -1,8 +1,8 @@
 name: dream-shop
-on: worflow_dispatch
+on:  push
 jobs:
-    first-job:
-        run-on: ubuntu-latest
-        step:
-            - name: Print step
-              run: echo "fu"
+  first-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print step
+        run: echo "fu"
