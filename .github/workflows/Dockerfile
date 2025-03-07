@@ -29,6 +29,7 @@ EXPOSE 8080
 
 ENV DB_URL=jdbc:mysql://container_mysql-dreamshop-db:3306/dreamshop-db
 ENV JAR_VERSION=${APP_VERSION}
+
 #Command to run the application
 #CMD : Spécifie la commande qui sera exécutée lorsque le conteneur démarre.
 #CMD  java -jar -Dspring.datasource.url=${DB_URL} dream-shop.${JAR_VERSION}.jar
