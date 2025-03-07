@@ -110,11 +110,11 @@ public class ProductController {
         return  ResponseEntity.ok(productService.getById(productId));
     }
 
-    @GetMapping("/filter-by")
+    @GetMapping("/prices")
     public ResponseEntity<Page<ProductDto>> filterProductByMinimumAndMaximumPrice(
             @RequestParam(defaultValue = "5",required = false) int pageSize,
-            @RequestParam BigDecimal minPrice,
-            @RequestParam BigDecimal maxPrice
+            @RequestParam(name = "min") BigDecimal minPrice,
+            @RequestParam(name = "max") BigDecimal maxPrice
     ){
         return  ResponseEntity.ok(productService.getProductByMinMaxPrice(minPrice, maxPrice, pageSize));
     }

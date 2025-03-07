@@ -21,8 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("images")
 public class ImageController {
-    private static final HttpStatus INTERNAL_ERROR_SERVER = HttpStatus.INTERNAL_SERVER_ERROR;
-    private static final HttpStatus NOT_FOUND = HttpStatus.NOT_FOUND;
+
     //inject services & mappers
     private final IImageService imageService;
 
@@ -35,12 +34,10 @@ public class ImageController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/upload")
     public ResponseEntity<ApiResponse> saveImages(@RequestBody  List<MultipartFile> files,@RequestParam(name = "productId") Long idProduct){
-        try {
-            List<ImageDto> results= imageService.saveImages(files,idProduct);
-            return ResponseEntity.ok(new ApiResponse("Upload successfull",results));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_ERROR_SERVER).body(new ApiResponse("Upload failed",e.getMessage()));
-        }
+
+        List<ImageDto> results= imageService.saveImages(files,idProduct);
+        return ResponseEntity.ok(new ApiResponse("Upload successfull",results));
+
     }
 
 
@@ -70,16 +67,9 @@ public class ImageController {
      */
     @PutMapping("/image/{idImage}/update")
     public ResponseEntity<ApiResponse> updateImage(@PathVariable Long idImage, @RequestBody MultipartFile file) {
-        try {
-            Image image = imageService.getImageById(idImage);
-            if (image != null) {
-                imageService.updateImage(file, idImage);
-                return ResponseEntity.ok(new ApiResponse("Update successfull", null));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Update failed !", e.getMessage()));
-        }
-        return ResponseEntity.status(INTERNAL_ERROR_SERVER).body(new ApiResponse("Update failed!", INTERNAL_ERROR_SERVER));
+        imageService.updateImage(file, idImage);
+        return ResponseEntity.ok(new ApiResponse("Update successfull", null));
+
     }
 
     /**
@@ -89,15 +79,9 @@ public class ImageController {
      */
     @DeleteMapping("/image/{idImage}/delete")
     public ResponseEntity<ApiResponse> deleteImage(@PathVariable Long idImage) {
-        try {
-            Image image = imageService.getImageById(idImage);
-            if (image != null) {
-                imageService.deleteImage(idImage);
-                return  ResponseEntity.ok(new ApiResponse("Successfully deleted", null));
-            }
-        }catch (Exception e) {
-            return ResponseEntity.status(NOT_FOUND).body(new ApiResponse("Delete failed !", e.getMessage()));
-        }
-        return ResponseEntity.status(INTERNAL_ERROR_SERVER).body(new ApiResponse("Delete failed!", INTERNAL_ERROR_SERVER));
+        Image image = imageService.getImageById(idImage);
+        imageService.deleteImage(idImage);
+        return  ResponseEntity.ok(new ApiResponse("Successfully deleted", null));
     }
+
 }

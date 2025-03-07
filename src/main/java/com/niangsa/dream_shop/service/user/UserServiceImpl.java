@@ -1,61 +1,44 @@
 package com.niangsa.dream_shop.service.user;
 
 import com.niangsa.dream_shop.dto.UserDto;
-import com.niangsa.dream_shop.entities.Role;
 import com.niangsa.dream_shop.entities.User;
+import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.UserMapper;
-import com.niangsa.dream_shop.repositories.RoleRepository;
 import com.niangsa.dream_shop.repositories.UserRepository;
-import com.niangsa.dream_shop.requests.AddUserRequest;
-import com.niangsa.dream_shop.requests.AuthenticationResquest;
-import com.niangsa.dream_shop.security.jwt.IJwtService;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 
 @AllArgsConstructor
 @Service
-public class UserServiceImpl implements IUserService  {
+public class UserServiceImpl implements IUserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final IJwtService jwtService;
     /**
      * check if user already exist otherwise we registered in db
-     * @param request from Form
+     * @param userDto from Form
      * @return UserDto
      */
-
-    public String registerUser( AddUserRequest request) {
-        Role role = existingRole(request.role());
-        UserDetails userDetails= Optional.of(request)
-                .filter(user -> !userRepository.existsByEmail(request.email()))
-                .map(newUserDto -> {
-                    User savedUser =  buildUser(request,role);
-                 return    userRepository.save(savedUser);
-                })
-                .orElseThrow(
-                        () -> new EntityExistsException(String.format("User already exist with provided email :%s!!!", request.email())));
-            return jwtService.createToken(userDetails);
-    }
-
-
-    /**
-     * @param request  from form
-     * @return token
-     */
     @Override
-    public String getUserAuthenticate( AuthenticationResquest request) {
-        UserDetails userDetails = loadUserByUsername(request.email());
-        return jwtService.createToken(userDetails);
+    public UserDto createUser(UserDto userDto) {
+        return Optional.of(userDto)
+                .filter(user -> !userRepository.existsByEmail(user.getEmail()))
+                .map(newUserDto ->{
+                 UserDto  savedUserDto = UserDto.builder()
+                            .email(userDto.getEmail())
+                            .username(userDto.getUsername())
+                            .password(userDto.getPassword())
+                            .lastName(userDto.getLastName())
+                            .firstName(userDto.getFirstName())
+                            .build();
+                    User user = userRepository.save(userMapper.toUserEntity(savedUserDto));
+                    return  userMapper.toUserDto(user);
+                } )
+                .orElseThrow(()-> new ApiRequestException(String.format("User already exist with provided email :%s!!!",userDto.getEmail())));
     }
 
     /**
@@ -67,7 +50,7 @@ public class UserServiceImpl implements IUserService  {
     public UserDto getById(Long id) {
         return userRepository.findById(id)
                 .map(userMapper::toUserDto)
-                .orElseThrow(()-> new EntityNotFoundException("No user were found  provided id:"+id));
+                .orElseThrow(()-> new ApiRequestException("User not found"));
     }
 
     /**
@@ -77,7 +60,7 @@ public class UserServiceImpl implements IUserService  {
     public void delete(Long id) {
      userRepository.findById(id)
                 .ifPresentOrElse(userRepository::delete, ()-> {
-                    throw  new EntityNotFoundException("No user were found  provided id:"+id);
+                    throw  new ApiRequestException("User not found");
                 });
     }
 
@@ -89,11 +72,14 @@ public class UserServiceImpl implements IUserService  {
     @Override
     public UserDto update(Long id, UserDto userDto) {
         User user = userRepository.findById(id)
-                .map(existingUser->{
+                .map((existingUser)->{
                     existingUser.setPassword(userDto.getPassword());
+                    //existingUser.setUsername(userDto.getUsername());
                     return userRepository.save(existingUser);
                 })
-                .orElseThrow(()-> new EntityNotFoundException("No user were found  provided id:"+id));
+                .orElseThrow(
+                        ()->{return   new ApiRequestException("User not found");}
+                );
         return userMapper.toUserDto(user);
     }
 
@@ -102,36 +88,8 @@ public class UserServiceImpl implements IUserService  {
      */
     @Override
     public List<UserDto> getAll() {
-        return userRepository.findAll().stream().map(userMapper::toUserDto)
+        return userRepository.findAll()
+                .stream().map(userMapper::toUserDto)
                 .toList();
-    }
-
-    /**
-     * @param email from form
-     * @return User informations
-     */
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-       return userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("No user found with provided email:"+email));
-    }
-
-    private User buildUser(AddUserRequest request, Role role) {
-        Collection<Role>roleCollection = new HashSet<>();
-        roleCollection.add(role);
-        String hashedPassword = this.passwordEncoder.encode(request.password());
-        Collection<Role> collect = new ArrayList<>(roleCollection);
-        return User.builder()
-                .roles(collect)
-                .email(request.email())
-                .firstName(request.firstName())
-                .lastName(request.lastName())
-                .roles(roleCollection)
-                .password(hashedPassword)
-                .build();
-    }
-
-    private Role existingRole(String roleName){
-        return  roleRepository.findRoleByName(roleName)
-                .orElseGet(()-> roleRepository.save(new Role(roleName)));
     }
 }
