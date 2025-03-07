@@ -30,4 +30,4 @@ ENV JAR_VERSION=${APP_VERSION}
 #CMD : Spécifie la commande qui sera exécutée lorsque le conteneur démarre.
 #CMD  java -jar -Dspring.datasource.url=${DB_URL} dream-shop.${JAR_VERSION}.jar
 CMD  java -jar  dream-shop.${JAR_VERSION}.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "dream-shop.jar"]
