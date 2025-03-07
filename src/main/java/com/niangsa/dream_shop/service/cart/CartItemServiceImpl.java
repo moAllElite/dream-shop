@@ -46,7 +46,7 @@ public class CartItemServiceImpl implements ICartItemService {
     public void addItemToCart( Long productId,Long userId, int quantity) {
 
             User user= userMapper.toUserEntity(userService.getById(userId));
-            Long    cartId = cartService.initializeCart(user);
+            Long    cartId = cartService.initializeCart(user).getId();
             CartDto cartDto = cartService.getCart(cartId);
             Cart cart = cartMapper.toCartEntity(cartDto);
 
