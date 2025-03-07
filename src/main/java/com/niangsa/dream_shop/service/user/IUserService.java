@@ -6,7 +6,7 @@ import com.niangsa.dream_shop.requests.AuthenticationResquest;
 import com.niangsa.dream_shop.service.IAbstractService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface IUserService extends IAbstractService<UserDto>{
+public interface IUserService extends IAbstractService<UserDto>, UserDetailsService {
 
      String getUserAuthenticate(AuthenticationResquest request);
 

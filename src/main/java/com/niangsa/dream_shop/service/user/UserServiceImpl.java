@@ -23,7 +23,7 @@ import java.util.*;
 
 @AllArgsConstructor
 @Service
-public class UserServiceImpl implements IUserService , UserDetailsService {
+public class UserServiceImpl implements IUserService  {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
@@ -37,7 +37,7 @@ public class UserServiceImpl implements IUserService , UserDetailsService {
 
     public String registerUser( AddUserRequest request) {
         Role role = existingRole(request.role());
-        UserDetails userDetails= Optional.of(request)
+        UserDetails userDetails= (UserDetails) Optional.of(request)
                 .filter(user -> !userRepository.existsByEmail(request.email()))
                 .map(newUserDto -> {
                     User savedUser =  buildUser(request,role);

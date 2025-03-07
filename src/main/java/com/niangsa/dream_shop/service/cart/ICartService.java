@@ -5,12 +5,11 @@ import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.User;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 public interface ICartService {
     CartDto getCart(Long id);
     void clearCart(Long id);
     BigDecimal getTotalPrice(Long id);
     Cart initializeCart(User user);
-    Cart getCartByUserId(Long userId);
+    CartDto getCartByUserId(Long userId);
 }

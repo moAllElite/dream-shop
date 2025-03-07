@@ -3,6 +3,7 @@ package com.niangsa.dream_shop.service.order;
 import com.niangsa.dream_shop.dto.CartDto;
 import com.niangsa.dream_shop.dto.OrderDto;
 import com.niangsa.dream_shop.dto.OrderItemDto;
+import com.niangsa.dream_shop.dto.ProductDto;
 import com.niangsa.dream_shop.entities.Order;
 import com.niangsa.dream_shop.entities.Product;
 import com.niangsa.dream_shop.enums.OrderStatuts;
@@ -73,11 +74,11 @@ public class OrderServiceImpl implements IOrderService {
                .map(cartItem-> {
                    Product product = productMapper.toProductEntity(cartItem.getProduct());
                    product.setInventory(product.getInventory() - cartItem.getQuantity());
-                   productRepository.save(product);
+                   ProductDto savedProduct = productMapper.toProductDto(productRepository.save(product));
                    return OrderItemDto.builder()
-                           .product(product)
+                           .product(savedProduct)
                            .quantity(cartItem.getQuantity())
-                           .orderDto(orderDto)
+                           .order(orderDto)
                            .build();
                } )
                .toList();
@@ -100,8 +101,8 @@ public class OrderServiceImpl implements IOrderService {
 
     /***
      * calculate the total amout =  quantity * price
-     * @param orderItemList
-     * @return
+     * @param orderItemList list of item in order
+     * @return total amount related to an user's order
      */
     public BigDecimal calculateToAmount(List<OrderItemDto> orderItemList){
         return   orderItemList.stream()
