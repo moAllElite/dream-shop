@@ -18,7 +18,7 @@ RUN mvn clean package -DskipTests
 #define arguments
 ARG APP_VERSION=1.0.0
 #2. Runtime stage
-FROM openjdk:17-alpine
+FROM openjdk:17
 # Set the working directory in the container
 WORKDIR /app
 # Copy the built JAR file from the previous stage to the container
