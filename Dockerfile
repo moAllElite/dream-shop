@@ -1,15 +1,13 @@
 #1. Build stage
 #Use the latest ubuntu distribution
 #FROM : Définit l’image de base sur laquelle l’image sera construite.
-FROM ubuntu:25.04
+FROM ubuntu:latest
 LABEL authors="Mouhamed NIANG"
 # Use an official Maven image as the base image
-#FROM maven:3.9.9-eclipse-temurin-17 AS build
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 # Set the working directory in the container
 WORKDIR /app
-# Copy the pom.xml and the project files to the container
-#COPY : Copie les fichiers depuis votre machine locale vers une nouvelle couche de l’image.
-#COPY pom.xml .
+
 
 #define arguments
 ARG APP_VERSION=1.0.0
@@ -18,7 +16,7 @@ ARG APP_VERSION=1.0.0
 # Set the working directory in the container
 #WORKDIR /app
 # Copy the built JAR file from the previous stage to the container
-COPY --from=build /build/target/dream-shop-*.jar /app/
+COPY  target/dream-shop-*.jar dream-shop-${APP_VERSION}.jar
 #COPY target/*.jar app.jar
 
 #Expose the port the spring boot application will run on
