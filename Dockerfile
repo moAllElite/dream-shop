@@ -4,7 +4,7 @@
 FROM ubuntu:25.04
 LABEL authors="Mouhamed NIANG"
 # Use an official Maven image as the base image
-FROM maven:3.9.9-openjdk:17 AS build
+FROM maven:3.9.9-amazoncorretto-17 AS build
 # Set the working directory in the container
 WORKDIR /app
 # Copy the pom.xml and the project files to the container
