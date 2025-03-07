@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class CartItemDto {
     private Long id;
+
     private int quantity;
     private BigDecimal unitPrice;
     private BigDecimal totalPrice;
