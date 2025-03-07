@@ -18,8 +18,8 @@ ARG APP_VERSION=1.0.0
 # Set the working directory in the container
 #WORKDIR /app
 # Copy the built JAR file from the previous stage to the container
-#COPY --from=build /build/target/dream-shop-*.jar /app/
-COPY target/*.jar app.jar
+COPY --from=build /build/target/dream-shop-*.jar /app/
+#COPY target/*.jar app.jar
 
 #Expose the port the spring boot application will run on
 EXPOSE 8080
