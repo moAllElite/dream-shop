@@ -1,6 +1,8 @@
 spring:
   application:
     name : dream-shop
+    cors:
+      origins: http://localhost:4200/,http://localhost:8080
   jpa:
     database: mysql
     hibernate:
