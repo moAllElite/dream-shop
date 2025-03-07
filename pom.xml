@@ -11,7 +11,7 @@
 
 	<groupId>com.niangsa</groupId>
 	<artifactId>dream-shop</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>dream-shop</name>
 	<description>Spring Boot, Spring Security, JWT Course – Shopping Cart Backend Java Project</description>
 	<url/>
