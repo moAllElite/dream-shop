@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Configuration
@@ -22,7 +23,7 @@ public class ApplicationConfig {
     private final UserRepository userRepository;
     @Bean
     public UserDetailsService userDetailsService() throws  UsernameNotFoundException{
-        return email -> userRepository.findByEmail(email)
+        return email -> Optional.ofNullable(userRepository.findByEmail(email))
                 .orElseThrow(()-> new UsernameNotFoundException("No user were found"));
     }
 

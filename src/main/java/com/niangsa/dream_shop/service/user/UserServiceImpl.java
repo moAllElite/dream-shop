@@ -13,6 +13,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ import java.util.*;
 
 @AllArgsConstructor
 @Service
-public class UserServiceImpl implements IUserService  {
+public class UserServiceImpl implements IUserService , UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
@@ -112,7 +113,7 @@ public class UserServiceImpl implements IUserService  {
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-       return userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("No user found with provided email:"+email));
+       return Optional.ofNullable(userRepository.findByEmail(email)).orElseThrow(()-> new UsernameNotFoundException("No user found with provided email:"+email));
     }
 
     private User buildUser(AddUserRequest request, Role role) {
