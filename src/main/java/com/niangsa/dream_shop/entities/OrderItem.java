@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-@Builder
+
 @Getter
 @Setter
 @Entity
@@ -16,17 +16,11 @@ public class OrderItem {
     private Long id;
     private BigDecimal price;
     private int quantity;
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "product_id")
     private Product product;
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "order_id")
     private Order order;
 
-    public OrderItem(Product product, Order order, int quantity, BigDecimal unitPrice) {
-        this.product = product;
-        this.order = order;
-        this.quantity = quantity;
-        this.price = unitPrice;
-    }
 }

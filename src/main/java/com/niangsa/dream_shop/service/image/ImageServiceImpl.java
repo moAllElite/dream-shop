@@ -8,6 +8,7 @@ import com.niangsa.dream_shop.mappers.ImageMapper;
 import com.niangsa.dream_shop.mappers.ProductMapper;
 import com.niangsa.dream_shop.repositories.ImageRepository;
 import com.niangsa.dream_shop.service.product.IProductService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class ImageServiceImpl implements IImageService {
     public Image getImageById(Long id) {
         return imageRepository.findById(id)
                 //.map(imageMapper::toImagedDto)
-                .orElseThrow(()-> new ApiRequestException("Image not found provided id:"+ id));
+                .orElseThrow(()-> new EntityNotFoundException("Image not found provided id:"+ id));
     }
 
     /**
@@ -47,7 +48,7 @@ public class ImageServiceImpl implements IImageService {
                 .ifPresentOrElse(
                         imageRepository::delete,
                         ()->{
-                            throw  new ApiRequestException("Image not found");
+                            throw  new EntityNotFoundException("Image not found");
                         }
                 );
     }
@@ -80,7 +81,7 @@ public class ImageServiceImpl implements IImageService {
                 product.setImages(images);
                 imageDtos.add(imageMapper.toImagedDto(savedImage));
             } catch (SQLException | IOException e)  {
-                throw new ApiRequestException(e.getMessage());
+                throw new EntityNotFoundException(e.getMessage());
             }
         }
         return imageDtos;
@@ -100,7 +101,7 @@ public class ImageServiceImpl implements IImageService {
             image.setImages(new SerialBlob(file.getBytes()));
             imageRepository.save(image);
         } catch (IOException | SQLException e) {
-            throw new ApiRequestException(e.getMessage());
+            throw new EntityNotFoundException(e.getMessage());
         }
     }
 }

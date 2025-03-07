@@ -11,7 +11,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class OrderDto {
-    private Long id;
+    private Long orderId;
     private LocalDate orderDate;
     private OrderStatuts orderStatuts;
     private BigDecimal totalAmount;
