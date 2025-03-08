@@ -3,8 +3,8 @@
 #FROM : Définit l’image de base sur laquelle l’image sera construite.
 FROM maven:3.9.9-eclipse-temurin-17 AS build
 # Copy the built JAR file from the previous stage to the container
-RUN mvn install
-COPY pom.xml mvnw ./
+
+COPY pom.xml mvn ./
 COPY .mvn .mvn
 #RUN ./mvnw dependency:off-
 
