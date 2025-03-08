@@ -3,13 +3,11 @@
 #FROM : Définit l’image de base sur laquelle l’image sera construite.
 FROM maven:3.9.9-eclipse-temurin-17 AS build
 # Copy the built JAR file from the previous stage to the container
-
-COPY pom.xml mvn ./
+COPY pom.xml mvnw ./
 COPY .mvn .mvn
-#RUN ./mvnw dependency:off-
 
 COPY src src
-RUN mvn -Dspring.skipTest=true  clean package
+RUN ./mvnw -Dspring.skipTest=true clean package
 
 FROM openjdk:17-jdk-alpine
 WORKDIR app
