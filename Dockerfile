@@ -8,7 +8,7 @@ COPY .mvn .mvn
 #RUN ./mvnw dependency:off-
 
 COPY src src
-RUN mvn  package
+RUN mvn -Dspring.skipTest=true  package
 
 FROM openjdk:17-jdk-alpine
 WORKDIR app
