@@ -3,15 +3,16 @@
 #FROM : Définit l’image de base sur laquelle l’image sera construite.
 
 
-# Set the working directory in the container
-
-# Set the working directory in the container
-
+FROM openjdk:17-jdk-alpine AS build
 # Copy the built JAR file from the previous stage to the container
+COPY pom.xml mvnw ./
+COPY .mvn .mvn
+RUN ./mvnw dependency:resolve
+
+COPY src src
+RUN ./mvnw package
+
 FROM openjdk:17-jdk-alpine
-LABEL authors="Mouhamed NIANG"
-WORKDIR /app
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
-#Command to run the application
+WORKDIR app
+COPY --from=build target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
