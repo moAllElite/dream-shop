@@ -7,7 +7,7 @@ COPY pom.xml mvnw ./
 COPY .mvn .mvn
 
 COPY src src
-RUN ./mvnw -Dspring.skipTest=true clean package
+RUN ./mvnw   package
 
 FROM openjdk:17-jdk-alpine
 WORKDIR app
