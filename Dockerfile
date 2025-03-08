@@ -16,7 +16,7 @@ FROM openjdk:17
 # Set the working directory in the container
 WORKDIR /app
 # Copy the built JAR file from the previous stage to the container
-COPY  /build/target/dream-shop-*.jar dream-shop-${APP_VERSION}.jar
+COPY  /build/target/dream-shop-*.jar dream-shop-1.0.0.jar
 #COPY target/*.jar app.jar
 
 #Expose the port the spring boot application will run on
