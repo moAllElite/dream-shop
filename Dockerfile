@@ -1,15 +1,27 @@
+# Use the official Maven image with Eclipse Temurin 17 as the build stage
+FROM maven:3.9.9-eclipse-temurin-17-alpine AS build
 
-#Use the latest ubuntu distribution
-#FROM : Définit l’image de base sur laquelle l’image sera construite.
-FROM maven:3.9.9-eclipse-temurin-17 AS build
-# Copy the built JAR file from the previous stage to the container
-COPY pom.xml mvnw ./
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the Maven project files (pom.xml and .mvn directory)
+COPY pom.xml .
 COPY .mvn .mvn
 
+# Copy the source code
 COPY src src
-RUN ./mvnw   package
 
+# Build the application (skip tests for faster builds)
+RUN mvn -Dspring.skipTest=true clean package
+
+# Use a lightweight base image for the final stage
 FROM openjdk:17-jdk-alpine
-WORKDIR app
-COPY --from=build target/*.jar app.jar
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the built JAR file from the build stage to the final image
+COPY --from=build /app/target/*.jar app.jar
+
+# Define the entry point to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
