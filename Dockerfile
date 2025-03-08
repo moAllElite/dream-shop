@@ -8,7 +8,7 @@ COPY .mvn .mvn
 #RUN ./mvnw dependency:off-
 
 COPY src src
-RUN ./mvnw clean package
+RUN mvn  package
 
 FROM openjdk:17-jdk-alpine
 WORKDIR app
