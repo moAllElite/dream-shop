@@ -2,7 +2,7 @@ services:
 
   mysql-dreamshop-db:
     image: mysql:8.0
-    container_name: container_mysql-dreamshop-db
+    container_name:  mysql-dreamshop-db
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: dreamshop-db
@@ -17,7 +17,7 @@ services:
 
 
   phpmyadmin-dreamshop-db:
-    container_name: container_phpmyadmin-dreamshopdb
+    container_name:  phpmyadmin-dreamshopdb
     image: phpmyadmin/phpmyadmin:latest
     ports:
       - "8085:80"

@@ -34,8 +34,8 @@ public class UserServiceImpl implements IUserService  {
      * @param request from Form
      * @return UserDto
      */
-
-    public String registerUser( AddUserRequest request) {
+    @Override
+    public String registerUser( AddUserRequest request) throws EntityExistsException {
         Role role = existingRole(request.role());
         UserDetails userDetails= (UserDetails) Optional.of(request)
                 .filter(user -> !userRepository.existsByEmail(request.email()))
@@ -50,13 +50,20 @@ public class UserServiceImpl implements IUserService  {
 
 
     /**
-     * @param request  from form
+     * @param request which are contains email & password  from form
      * @return token
      */
     @Override
-    public String getUserAuthenticate( AuthenticationResquest request) {
-        UserDetails userDetails = loadUserByUsername(request.email());
-        return jwtService.createToken(userDetails);
+    public String getUserAuthenticate( AuthenticationResquest request) throws UsernameNotFoundException , EntityNotFoundException{
+        try {
+            UserDetails userDetails = loadUserByUsername(request.email());
+            System.out.println(userDetails);
+            return jwtService.createToken(userDetails);
+        } catch (UsernameNotFoundException | EntityNotFoundException e) {
+            throw new EntityNotFoundException(
+                    "Email or password is incorrect. Please try again later."
+            );
+        }
     }
 
     /**

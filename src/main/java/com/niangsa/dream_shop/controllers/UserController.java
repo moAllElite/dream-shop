@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 @RestController
 public class UserController {
     private final IUserService userService;
-    @GetMapping("/{id}")
+    @GetMapping("/{userId}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long userId){
         return ResponseEntity.ok(userService.getById(userId));
     }
@@ -32,12 +32,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getAll());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{userId}")
     public ResponseEntity<ApiResponse> delete(@PathVariable Long userId){
         return ResponseEntity.ok(new ApiResponse("User delete success",null));
     }
 
-    @PutMapping("/{id}/update")
+    @PutMapping("/admin/{id}/update")
     public ResponseEntity<ApiResponse> update(@PathVariable Long id , @RequestBody UserDto userDto){
         return ResponseEntity.ok(
                 new ApiResponse("User update success",userService.update(id,userDto)));

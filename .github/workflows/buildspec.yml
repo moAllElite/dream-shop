@@ -2,7 +2,7 @@ name: dream-shop
 on:
   push:
     branches:
-      - main
+      - ["main","pull-request"]
 jobs:
   docker-job:
     runs-on: ubuntu-latest

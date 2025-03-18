@@ -10,6 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@Table(name = "orders")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order {
