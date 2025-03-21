@@ -7,7 +7,6 @@ import com.niangsa.dream_shop.dto.ProductDto;
 import com.niangsa.dream_shop.entities.Order;
 import com.niangsa.dream_shop.entities.Product;
 import com.niangsa.dream_shop.enums.OrderStatuts;
-import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.OrderItemMapper;
 import com.niangsa.dream_shop.mappers.OrderMapper;
 import com.niangsa.dream_shop.mappers.ProductMapper;
@@ -15,6 +14,7 @@ import com.niangsa.dream_shop.repositories.OrderItemRepository;
 import com.niangsa.dream_shop.repositories.OrderRepository;
 import com.niangsa.dream_shop.repositories.ProductRepository;
 import com.niangsa.dream_shop.service.cart.ICartService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +60,7 @@ public class OrderServiceImpl implements IOrderService {
     public OrderDto getOrder(Long orderId) {
         return orderRepository.findById(orderId)
                 .map(orderMapper::toOrderDto)
-                .orElseThrow(()-> new ApiRequestException("Order not found"));
+                .orElseThrow(()-> new EntityNotFoundException("Order not found"));
     }
 
     /**

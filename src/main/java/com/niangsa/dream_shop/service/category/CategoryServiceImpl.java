@@ -2,7 +2,6 @@ package com.niangsa.dream_shop.service.category;
 
 import com.niangsa.dream_shop.dto.CategoryDto;
 import com.niangsa.dream_shop.entities.Category;
-import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.CategoryMapper;
 import com.niangsa.dream_shop.repositories.CategoryRepository;
 import jakarta.persistence.EntityExistsException;
@@ -56,7 +55,7 @@ public class CategoryServiceImpl implements ICategoryService {
         categoryRepository.findById(id)
                 .ifPresentOrElse(
                         categoryRepository::delete,
-                        ()-> {throw  new ApiRequestException("No category were found");}
+                        ()-> {throw  new EntityNotFoundException("No category were found");}
                 );
     }
 

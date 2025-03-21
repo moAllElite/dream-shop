@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product,Long>, PagingAndSortingRepository<Product,Long> {
 
-    Optional<List<Product>> findByName(String name);
+    Product findByName(String name);
     List<Product> findByCategoryName(String categoryName);
     Optional<List<Product>> findProductsByBrand(String brand);
     List<Product> findByBrandAndName(String brand, String name);

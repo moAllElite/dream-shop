@@ -38,7 +38,7 @@ public class ProductServiceImpl implements IProductService {
      *     3-       if no , then save as new category
      */
     @Override
-    public ProductDto saveProduct(ProductDto request){
+    public Product saveProduct(Product request){
         if(productExists(request.getName(),request.getBrand())){
             throw new EntityExistsException(
                     String.format("Product name already exists with provided name %s and brand %s, you may update this product instead",request.getName(),request.getBrand()));
@@ -52,8 +52,8 @@ public class ProductServiceImpl implements IProductService {
                         }
                 );
        request.setCategory(categoryEntity);
-       Product entity= productRepository.save(productMapper.toProductEntity(request));
-       return productMapper.toProductDto(entity);
+   //    Product entity= productRepository.save(productMapper.toProductEntity(request));
+       return productRepository.save(request);
     }
 
     /**
@@ -159,11 +159,12 @@ public class ProductServiceImpl implements IProductService {
      * @return List of products
      */
     @Override
-    public List<ProductDto> getProductByName(String name) {
-        return productRepository.findByName(name)
-                .orElseThrow(()-> new EntityNotFoundException("No product found with name: " + name))
-                .stream().map(productMapper::toProductDto)
-                .toList();
+    public ProductDto getProductByName(String name) {
+        Product product = productRepository.findByName(name);
+        if(product == null) {
+            throw  new EntityNotFoundException(String.format("Product not found with provided name: %s",name));
+        }
+        return productMapper.toProductDto(product)  ;
     }
 
     /**

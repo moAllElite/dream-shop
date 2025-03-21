@@ -36,15 +36,15 @@ public class SecurityConfig {
                         auth.requestMatchers(
                                 "/auth/**",
                                 "/products",
+                                "/images/image/download/**",
                                 "/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll();
-
-                        // Admin Endpoints
-                        auth.requestMatchers("/admin/**").hasRole("ADMIN");
+//                        // Admin Endpoints
+//                        auth.requestMatchers("/admin/**").hasRole("ADMIN");
 
                         // Any other request needs authentication
                         auth.anyRequest().authenticated();

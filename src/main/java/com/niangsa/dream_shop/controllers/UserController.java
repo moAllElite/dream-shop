@@ -32,12 +32,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getAll());
     }
 
-    @DeleteMapping("/admin/{userId}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse> delete(@PathVariable Long userId){
         return ResponseEntity.ok(new ApiResponse("User delete success",null));
     }
 
-    @PutMapping("/admin/{id}/update")
+    @PutMapping("/{id}/update")
     public ResponseEntity<ApiResponse> update(@PathVariable Long id , @RequestBody UserDto userDto){
         return ResponseEntity.ok(
                 new ApiResponse("User update success",userService.update(id,userDto)));

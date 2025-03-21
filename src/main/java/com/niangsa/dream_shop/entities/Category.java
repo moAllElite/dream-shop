@@ -15,13 +15,14 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @JsonIgnore
     @OneToMany(mappedBy = "category" ,fetch = FetchType.EAGER)
     private List<Product> products;
 
+    //default constructor
     public Category() {
     }
 
+    //constructor with params
     public Category(String categoryName) {
         this.name = categoryName;
     }

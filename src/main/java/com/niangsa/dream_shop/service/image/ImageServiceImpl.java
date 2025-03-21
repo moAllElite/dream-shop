@@ -3,13 +3,13 @@ package com.niangsa.dream_shop.service.image;
 import com.niangsa.dream_shop.dto.ImageDto;
 import com.niangsa.dream_shop.entities.Image;
 import com.niangsa.dream_shop.entities.Product;
-import com.niangsa.dream_shop.exceptions.ApiRequestException;
 import com.niangsa.dream_shop.mappers.ImageMapper;
 import com.niangsa.dream_shop.mappers.ProductMapper;
 import com.niangsa.dream_shop.repositories.ImageRepository;
 import com.niangsa.dream_shop.service.product.IProductService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -62,12 +62,15 @@ public class ImageServiceImpl implements IImageService {
      */
     @Transactional
     @Override
-    public List<ImageDto> saveImages(List<MultipartFile> files, Long idProduct) {
+    public List<ImageDto> saveImages(  List<MultipartFile> files, Long idProduct) {
         List<ImageDto> imageDtos = new ArrayList<>();
         Product product = productMapper.toProductEntity(productService.getById(idProduct));
+        if(files == null ||files.isEmpty()){
+            throw new IllegalStateException("Le fichier est vide");
+        }
+        List<Image> images = new ArrayList<>();
         for (MultipartFile file: files){
             try {
-                List<Image> images = new ArrayList<>();
                 Image image = new Image();
                 image.setProduct(product);
                 image.setImages(new SerialBlob(file.getBytes()));
@@ -80,9 +83,11 @@ public class ImageServiceImpl implements IImageService {
                 images.add(savedImage);
                 product.setImages(images);
                 imageDtos.add(imageMapper.toImagedDto(savedImage));
-            } catch (SQLException | IOException e)  {
-                throw new EntityNotFoundException(e.getMessage());
+            } catch (SQLException | IOException  e)  {
+                throw new RuntimeException("Erreur lors du traitement de l'image", e);
             }
+            // Ajout de toutes les images au produit
+            product.setImages(images);
         }
         return imageDtos;
     }

@@ -1,6 +1,7 @@
 package com.niangsa.dream_shop.controllers;
 
 import com.niangsa.dream_shop.dto.ProductDto;
+import com.niangsa.dream_shop.entities.Product;
 import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.product.IProductService;
 import jakarta.validation.Valid;
@@ -26,33 +27,28 @@ public class ProductController {
      * get all information's about products
      * @return List of Products
      */
-    @GetMapping("")
-    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
     public List<ProductDto> getAllProducts(){
         return  productService.getAll();
     }
 
     /***
      * create new product
-     * @param productDto
+     * @param product
      * on success Http status 201
      */
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> createProduct(@RequestBody ProductDto productDto){
-          productService.saveProduct(productDto);
-          return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Created success ", productDto.getId()));
+    public ResponseEntity<ApiResponse> createProduct(@RequestBody Product product){
+          productService.saveProduct(product);
+          return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("Created success ", product));
     }
 
 
     @PutMapping("/{id}/update")
     public ResponseEntity<ApiResponse> update(@PathVariable Long id,@Valid @RequestBody ProductDto productDto){
-        try {
             productService.update(id, productDto);
             return  ResponseEntity.ok().body(new ApiResponse("Updated success ", productDto));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_ERROR_SERVER).body(new ApiResponse("Update failed", INTERNAL_ERROR_SERVER));
-        }
     }
 
     /**
@@ -68,7 +64,7 @@ public class ProductController {
     }
 
     @GetMapping("/search/by")
-    public ResponseEntity<List<ProductDto>> searchProductByName(@RequestParam  String name){
+    public ResponseEntity<ProductDto> searchProductByName(@RequestParam  String name){
      return  ResponseEntity.ok(productService.getProductByName(name));
     }
 
