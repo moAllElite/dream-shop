@@ -36,6 +36,9 @@ public class SecurityConfig {
                         auth.requestMatchers(
                                 "/auth/**",
                                 "/products",
+                                "/products/search-by/**",
+                                "product/search/**",
+                                "/api-docs.yaml",
                                 "/images/image/download/**",
                                 "/api-docs/**",
                                 "/swagger-ui/**",
@@ -47,7 +50,7 @@ public class SecurityConfig {
 //                        auth.requestMatchers("/admin/**").hasRole("ADMIN");
 
                         // Any other request needs authentication
-                        auth.anyRequest().authenticated();
+                       auth.anyRequest().authenticated();
                     })
                     .authenticationProvider(authenticationProvider)
                     .addFilterBefore(authenFilter, UsernamePasswordAuthenticationFilter.class)

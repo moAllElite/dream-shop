@@ -13,7 +13,6 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -74,7 +73,7 @@ public class UserServiceImpl implements IUserService  {
     @Override
     public UserDto getById(Long id) {
         return userRepository.findById(id)
-                .map(userMapper::toUserDto)
+                .map(userMapper::userToUserDto)
                 .orElseThrow(()-> new EntityNotFoundException("No user were found  provided id:"+id));
     }
 
@@ -102,7 +101,7 @@ public class UserServiceImpl implements IUserService  {
                     return userRepository.save(existingUser);
                 })
                 .orElseThrow(()-> new EntityNotFoundException("No user were found  provided id:"+id));
-        return userMapper.toUserDto(user);
+        return userMapper.userToUserDto(user);
     }
 
     /**
@@ -110,7 +109,8 @@ public class UserServiceImpl implements IUserService  {
      */
     @Override
     public List<UserDto> getAll() {
-        return userRepository.findAll().stream().map(userMapper::toUserDto)
+        return userRepository.findAll().stream()
+                .map(userMapper::userToUserDto)
                 .toList();
     }
 

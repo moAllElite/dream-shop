@@ -33,7 +33,10 @@ public class CartController {
         return ResponseEntity.ok().body(new ApiResponse("Clear cart success !",null));
     }
 
-
+    @GetMapping("/user")
+    public  ResponseEntity<CartDto> getUserCart(@RequestParam(name = "id") Long userId){
+        return ResponseEntity.ok(cartService.getCartByUserId(userId));
+    }
 
 
 }

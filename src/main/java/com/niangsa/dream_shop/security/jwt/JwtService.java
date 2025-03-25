@@ -2,13 +2,17 @@ package com.niangsa.dream_shop.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.KeyAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 
 import javax.crypto.SecretKey;
+import javax.xml.crypto.AlgorithmMethod;
+import java.security.AlgorithmParameters;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +24,8 @@ public class JwtService implements IJwtService {
     private String jwtSecret;
     @Value("${auth.token.expirationInMils}")
     private long expirationTime;
+
+
 
     /**
      * @param userDetails build from User's infos
@@ -81,7 +87,7 @@ public class JwtService implements IJwtService {
         try {
             String userEmail = getUsernameFromToken(token);
             return userEmail.equals(userDetails.getUsername()) && !isTokenExpired(token);
-        } catch (ExpiredJwtException |MalformedJwtException  |IllegalArgumentException | UnsupportedJwtException e) {
+        } catch (JwtException e) {
             throw new JwtException(e.getMessage());
         }
     }
@@ -100,6 +106,11 @@ public class JwtService implements IJwtService {
                 .getPayload().getExpiration();
         return  expirationDate.before(new Date());
     }
+
+    /**
+     * decode secret key in base 64
+     * @return SecretKey
+     */
 
     private SecretKey signInKey() {
         byte[] encodedKey = Decoders.BASE64.decode(jwtSecret);

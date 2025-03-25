@@ -2,6 +2,7 @@ package com.niangsa.dream_shop.service.category;
 
 import com.niangsa.dream_shop.dto.CategoryDto;
 import com.niangsa.dream_shop.entities.Category;
+import com.niangsa.dream_shop.entities.User;
 import com.niangsa.dream_shop.mappers.CategoryMapper;
 import com.niangsa.dream_shop.repositories.CategoryRepository;
 import jakarta.persistence.EntityExistsException;
@@ -78,14 +79,13 @@ public class CategoryServiceImpl implements ICategoryService {
 
 
     /**
-     *
      * @return list of CategoryDto
      */
     @Override
     public List<CategoryDto> getAll() {
         return categoryRepository.findAll()
                 .stream()
-                .map(categoryMapper::toDto)
+               .map(categoryMapper::toDto)
                 .toList();
     }
 }

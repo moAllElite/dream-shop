@@ -14,12 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-@CrossOrigin("*")
+
 @RequestMapping("/products")
 @RequiredArgsConstructor
 @RestController
 public class ProductController {
-    private static final HttpStatus INTERNAL_ERROR_SERVER = HttpStatus.INTERNAL_SERVER_ERROR;
     //inject service
     private  final IProductService productService;
 
@@ -80,12 +79,12 @@ public class ProductController {
             return   ResponseEntity.ok(productService.countByBrandAndName(name,brand));
     }
 
-    @GetMapping("/find-by")
+    @GetMapping("/search-by")
     public ResponseEntity<List<ProductDto>> getProductByBrand(@RequestParam String brand){
       return ResponseEntity.ok( productService.getProductByBrand(brand));
     }
 
-    @GetMapping("/{category}/all")
+    @GetMapping("/search-by/{category}/all")
     public  ResponseEntity<List<ProductDto>> searchProductByCategory(@PathVariable String category){
         return ResponseEntity.ok(productService.getProductByCategory(category));
     }
@@ -96,19 +95,19 @@ public class ProductController {
                 return ResponseEntity.ok(productService.getProductByCategoryAndBand(brand,category));
     }
 
-    @GetMapping("/by/name-and-brand")
+    @GetMapping("/search-by/name-and-brand")
     public ResponseEntity<List<ProductDto>> getProductByNameAndBrand(@RequestParam String name,@RequestParam String brand){
         return  ResponseEntity.ok(productService.getProductByNameAndBrand(name,brand));
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/search-by/{productId}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable Long productId){
         return  ResponseEntity.ok(productService.getById(productId));
     }
 
-    @GetMapping("/prices")
+    @GetMapping("/search-by/prices")
     public ResponseEntity<Page<ProductDto>> filterProductByMinimumAndMaximumPrice(
-            @RequestParam(defaultValue = "5",required = false) int pageSize,
+            @RequestParam(defaultValue = "15",required = false) int pageSize,
             @RequestParam(name = "min") BigDecimal minPrice,
             @RequestParam(name = "max") BigDecimal maxPrice
     ){

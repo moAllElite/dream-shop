@@ -83,8 +83,6 @@ public class CartServiceImpl implements ICartService {
      */
     @Override
     public CartDto getCartByUserId(Long userId) {
-        return cartRepository.findCartByUserId(userId)
-                .map(cartMapper::toCartDto)
-                .orElseThrow(()->new EntityNotFoundException("No card  assign to this user was found provided ID: "+userId));
+        return cartMapper.toCartDto(cartRepository.findCartByUserId(userId));
     }
 }
