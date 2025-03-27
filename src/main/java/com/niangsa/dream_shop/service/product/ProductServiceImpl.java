@@ -106,10 +106,12 @@ public class ProductServiceImpl implements IProductService {
      * @return List of  Products in Database
      */
     @Override
-    public List<ProductDto> getAll() {
-        return   productRepository.findAll()
+    public Page<ProductDto> getPaginatedProducts(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber,pageSize);
+        List<ProductDto> list = productRepository.findAll()
                 .stream().map(productMapper::toProductDto)
                 .toList();
+        return new PageImpl<>(list,pageable,list.size());
     }
 
 
@@ -192,18 +194,17 @@ public class ProductServiceImpl implements IProductService {
     }
 
     /**
-     *
      * @param minPrice of product
      * @param maxPrice of product
      * @param pageSize number of item which show
      * @return List of product following a range of price
      */
     @Override
-    public Page<ProductDto> getProductByMinMaxPrice(BigDecimal minPrice, BigDecimal maxPrice, int pageSize) {
-        Pageable firstPage = PageRequest.of(0, pageSize);
-        List<ProductDto> productList =  productRepository.findByPriceBetween(minPrice,maxPrice)
+    public Page<ProductDto> getProductByMinMaxPrice(BigDecimal minPrice, BigDecimal maxPrice, int pageNumber, int pageSize) {
+        Pageable firstPage = PageRequest.of(pageNumber, pageSize);
+     List<ProductDto>   productList = productRepository.findByPriceBetween(minPrice,maxPrice)
                 .stream().map(productMapper::toProductDto).toList();
-        return new PageImpl<>(productList,firstPage,productList.size());
+       return new PageImpl<>(productList,firstPage,productList.size());
 
     }
 

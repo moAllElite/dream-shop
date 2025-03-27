@@ -36,6 +36,7 @@ public class SecurityConfig {
                         auth.requestMatchers(
                                 "/auth/**",
                                 "/products",
+                                "/products?size=**",
                                 "/products/search-by/**",
                                 "product/search/**",
                                 "/api-docs.yaml",

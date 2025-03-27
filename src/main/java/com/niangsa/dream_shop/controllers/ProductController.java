@@ -23,12 +23,16 @@ public class ProductController {
     private  final IProductService productService;
 
     /**
-     * get all information's about products
-     * @return List of Products
+     *
+     * @param pageNumber int
+     * @param pageSize int represent the index
+     * @return Page of products
      */
-    @GetMapping
-    public List<ProductDto> getAllProducts(){
-        return  productService.getAll();
+    @GetMapping("")
+    public Page<ProductDto> getAllProducts(
+            @RequestParam(defaultValue = "30",name = "size") int pageNumber,
+            @RequestParam(name = "page", defaultValue = "1") int pageSize){
+        return  productService.getPaginatedProducts(pageNumber,pageSize);
     }
 
     /***
@@ -107,10 +111,11 @@ public class ProductController {
 
     @GetMapping("/search-by/prices")
     public ResponseEntity<Page<ProductDto>> filterProductByMinimumAndMaximumPrice(
-            @RequestParam(defaultValue = "15",required = false) int pageSize,
+            @RequestParam(defaultValue = "20",required = false) int pageNumber,
+            @RequestParam(defaultValue = "1") int pageSize,
             @RequestParam(name = "min") BigDecimal minPrice,
             @RequestParam(name = "max") BigDecimal maxPrice
     ){
-        return  ResponseEntity.ok(productService.getProductByMinMaxPrice(minPrice, maxPrice, pageSize));
+        return  ResponseEntity.ok(productService.getProductByMinMaxPrice(minPrice, maxPrice,pageNumber, pageSize));
     }
 }
