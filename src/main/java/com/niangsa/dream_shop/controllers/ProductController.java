@@ -30,8 +30,8 @@ public class ProductController {
      */
     @GetMapping("")
     public Page<ProductDto> getAllProducts(
-            @RequestParam(defaultValue = "30",name = "size") int pageNumber,
-            @RequestParam(name = "page", defaultValue = "1") int pageSize){
+            @RequestParam(defaultValue = "0",name = "page",required = false) int pageNumber,
+            @RequestParam(name = "size", defaultValue = "20",required = false) int pageSize){
         return  productService.getPaginatedProducts(pageNumber,pageSize);
     }
 
@@ -48,6 +48,12 @@ public class ProductController {
     }
 
 
+    /**
+     *
+     * @param id
+     * @param productDto
+     * @return
+     */
     @PutMapping("/{id}/update")
     public ResponseEntity<ApiResponse> update(@PathVariable Long id,@Valid @RequestBody ProductDto productDto){
             productService.update(id, productDto);

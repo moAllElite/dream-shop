@@ -44,31 +44,30 @@ public class CartItemServiceImpl implements ICartItemService {
     private final UserMapper userMapper;
     @Override
     public void addItemToCart( Long productId,Long userId, int quantity) {
-            User user= userMapper.userDtotoUser(userService.getById(userId));
-            Long    cartId = cartService.initializeCart(user).getId();
-            CartDto cartDto = cartService.getCart(cartId);
-            Cart cart = cartMapper.toCartEntity(cartDto);
+        User user= userMapper.userDtotoUser(userService.getById(userId));
+        Long    cartId = cartService.initializeCart(user).getId();
+        CartDto cartDto = cartService.getCart(cartId);
+        Cart cart = cartMapper.toCartEntity(cartDto);
 
-            Product product = productMapper.toProductEntity( productService.getById(productId));
-            CartItem cartItem = cart.getItems()
-                    .stream()
-                    .filter(item -> item.getProduct().getId().equals(productId))
-                    .findFirst().orElse(new CartItem());
+        Product product = productMapper.toProductEntity( productService.getById(productId));
+        CartItem cartItem = cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst().orElse(new CartItem());
 
-            if(cartItem.getId() == null){
-                cartItem.setCart(cart);
-                cartItem.setProduct(product);
-                cartItem.setQuantity(quantity);
-                cartItem.setUnitPrice(product.getPrice());
-            } else {
-                cartItem.setQuantity(quantity + cartItem.getQuantity() );
-            }
+        if(cartItem.getId() == null){
+            cartItem.setCart(cart);
+            cartItem.setProduct(product);
+            cartItem.setQuantity(quantity);
+            cartItem.setUnitPrice(product.getPrice());
+        } else {
+            cartItem.setQuantity(quantity + cartItem.getQuantity() );
+        }
 
-            cartItem.setTotalPrice();//update the total price which is equal to qte * unit price
-            cart.addItem(cartItem);
-            cart.setUser(user); //assign to user
-            cartItemRepository.save(cartItem); // persist on db
-            cartRepository.save(cart);// persist on db
+        cartItem.setTotalPrice();//update the total price which is equal to qte * unit price
+        cart.addItem(cartItem);
+        cart.setUser(user); //assign to user
+        cartItemRepository.save(cartItem); // persist on db
+        cartRepository.save(cart);// persist on db
 
     }
 
@@ -81,7 +80,7 @@ public class CartItemServiceImpl implements ICartItemService {
     public void removeItemToCart(Long cartId, Long productId) {
         Cart cart = cartMapper.toCartEntity(cartService.getCart(cartId)); //get the current cart
         CartItem itemToRemove =  cartItemMapper.toCartItemEntity(getCartItem(cartId, productId));//get cart's item
-     //   Cart cart = cartMapper.toCartEntity(cartDto);// convert to Entity
+        //   Cart cart = cartMapper.toCartEntity(cartDto);// convert to Entity
         cart.removeItem(itemToRemove); //drop item from cart
         cartRepository.save(cart);//persist cart on db
     }
@@ -96,23 +95,23 @@ public class CartItemServiceImpl implements ICartItemService {
         //get the current cart
         Cart cart = cartMapper.toCartEntity( cartService.getCart(cartId));
         //update quantity from form
-         cart.getItems().stream()
-                 .filter(item -> item.getProduct().getId().equals(productId))
-                 .findFirst()
-                 .ifPresentOrElse(
-                          item -> {
-                              item.setQuantity(quantity);
-                              item.setUnitPrice(productService.getById(productId).getPrice());
-                              item.setTotalPrice();
-                          },
-                         ()-> { throw new EntityNotFoundException("product not found"); }
-                 );
-            //get calculed totalamount after update quantity
-            BigDecimal totalAmount = cart.getTotalAmount();
-            //assign the updated total amount
-            cart.setTotalAmount(totalAmount);
-            //save cart
-            cartRepository.save(cart);
+        cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst()
+                .ifPresentOrElse(
+                        item -> {
+                            item.setQuantity(quantity);
+                            item.setUnitPrice(productService.getById(productId).getPrice());
+                            item.setTotalPrice();
+                        },
+                        ()-> { throw new EntityNotFoundException("product not found"); }
+                );
+        //get calculed totalamount after update quantity
+        BigDecimal totalAmount = cart.getTotalAmount();
+        //assign the updated total amount
+        cart.setTotalAmount(totalAmount);
+        //save cart
+        cartRepository.save(cart);
     }
 
     //get cart's item according to  product id & cart id

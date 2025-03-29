@@ -1,6 +1,8 @@
 package com.niangsa.dream_shop.repositories;
 
 import com.niangsa.dream_shop.entities.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -17,5 +19,5 @@ public interface ProductRepository extends JpaRepository<Product,Long>, PagingAn
     List<Product> findProductByBrandAndCategoryName(String brand, String categoryName);
     Long countByBrandAndName(String brand,String name);
     boolean existsByNameAndBrand(String name, String brand);
-    List<Product> findByPriceBetween(BigDecimal low, BigDecimal high);
+    Page<Product> findByPriceBetween(BigDecimal low, BigDecimal high, Pageable pageable);
 }

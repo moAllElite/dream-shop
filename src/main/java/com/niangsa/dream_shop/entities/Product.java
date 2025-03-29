@@ -2,10 +2,11 @@ package com.niangsa.dream_shop.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 import java.math.BigDecimal;
 import java.util.List;
-
+@EnableSpringDataWebSupport
 @Entity
 @Builder
 @AllArgsConstructor
