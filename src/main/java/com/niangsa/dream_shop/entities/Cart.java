@@ -20,7 +20,7 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private   Long id;
     private BigDecimal totalAmount = BigDecimal.ZERO;
-    @OneToMany(mappedBy = "cart",cascade = {CascadeType.DETACH,CascadeType.REMOVE,CascadeType.PERSIST},orphanRemoval = true)
+    @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL,orphanRemoval = true)
     private  Set<CartItem> items =  new HashSet<>();
     @OneToOne
     @JoinColumn(name = "user_id")
@@ -31,11 +31,12 @@ public class Cart {
         item.setCart(this);
         updateCartTotalAmount();
     }
-    public void  removeItem(CartItem item){
+    public void removeItem(CartItem item){
         this.items.remove(item);
         item.setCart(null);
         updateCartTotalAmount();
     }
+
 
     /**
      * get total Amount which is the sum of  total price present in car

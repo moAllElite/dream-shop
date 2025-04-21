@@ -43,13 +43,20 @@ public class CartServiceImpl implements ICartService {
     @Transactional
     @Override
     public void clearCart(Long cartId) {
-            //1- Get cart info
-            Cart cart = cartRepository.findById(cartId).orElseThrow(()-> new EntityNotFoundException("No cart found id"+cartId));
-            // 2. Remove all cart items by cartId
-           cart.getItems().clear();// 3. Clear cart items from cart
-            cart.setTotalAmount(BigDecimal.ZERO);
-            cartRepository.delete(cart);
+        // 1. Récupérer le panier
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new EntityNotFoundException("No cart found with id: " + cartId));
+
+        // 2. Vider les items
+        cart.getItems().clear();
+
+        // 3. Réinitialiser le total
+        cart.setTotalAmount(BigDecimal.ZERO);
+
+        // 4. Sauvegarder (orphanRemoval supprimera les CartItem de la DB)
+        cartRepository.save(cart);
     }
+
 
     /**
      * @param id cart long
@@ -64,14 +71,11 @@ public class CartServiceImpl implements ICartService {
     }
     /**initialize the cart
      */
-    private final UserMapper userMapper;
     @Override
     public Cart initializeCart(User user){
-        System.out.println(user.getEmail());
-        return   Optional.ofNullable(cartMapper.toCartEntity(getCartByUserId(user.getId())))
+        return   Optional.ofNullable(cartRepository.findCartByUserId(user.getId()))
                .orElseGet(()->{
                    Cart cart= new Cart();
-                   System.out.println(user.getEmail());
                    cart.setUser(user);
                    return cartRepository.save(cart);
                });

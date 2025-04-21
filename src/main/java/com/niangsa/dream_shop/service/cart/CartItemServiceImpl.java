@@ -6,7 +6,6 @@ import com.niangsa.dream_shop.entities.Cart;
 import com.niangsa.dream_shop.entities.CartItem;
 import com.niangsa.dream_shop.entities.Product;
 import com.niangsa.dream_shop.entities.User;
-import com.niangsa.dream_shop.mappers.CartItemMapper;
 import com.niangsa.dream_shop.mappers.CartMapper;
 import com.niangsa.dream_shop.mappers.ProductMapper;
 import com.niangsa.dream_shop.mappers.UserMapper;
@@ -17,15 +16,16 @@ import com.niangsa.dream_shop.service.user.IUserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
 public class CartItemServiceImpl implements ICartItemService {
     private final CartItemRepository cartItemRepository;
     private final ICartService cartService;
-    private final CartItemMapper cartItemMapper;
     private final CartMapper cartMapper;
     private final ProductMapper productMapper;
     private final CartRepository cartRepository;
@@ -33,8 +33,7 @@ public class CartItemServiceImpl implements ICartItemService {
     private final IUserService userService;
 
     /**
-     * @param productId long
-     * @param quantity int
+     *
      *  //1. Get the cart from user Id
      *         //2. Get the product
      *         //3. check if the product already in the cart
@@ -44,45 +43,63 @@ public class CartItemServiceImpl implements ICartItemService {
     private final UserMapper userMapper;
     @Override
     public void addItemToCart( Long productId,Long userId, int quantity) {
+        // Récupérer l'utilisateur
         User user= userMapper.userDtotoUser(userService.getById(userId));
-        Long    cartId = cartService.initializeCart(user).getId();
-        CartDto cartDto = cartService.getCart(cartId);
-        Cart cart = cartMapper.toCartEntity(cartDto);
 
+        // Récupérer ou initialiser le panier de l'utilisateur
+        Cart   cart = cartService.initializeCart(user);
+        // Récupérer le produit
         Product product = productMapper.toProductEntity( productService.getById(productId));
-        CartItem cartItem = cart.getItems().stream()
-                .filter(item -> item.getProduct().getId().equals(productId))
-                .findFirst().orElse(new CartItem());
 
-        if(cartItem.getId() == null){
-            cartItem.setCart(cart);
+
+        // Rechercher l'item existant dans le cart
+        Optional<CartItem> existingItemOpt = cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst();
+        CartItem cartItem;
+
+////        CartDto cartDto = cartService.getCart(cart.getId());
+//        //Cart cart = cartMapper.toCartEntity(cartDto);
+//    //    CartItem cartItem = cart.getItems().stream()
+//                .filter(item -> item.getProduct().getId().equals(productId))
+//                .findFirst().orElse(null);
+
+        if(existingItemOpt.isEmpty()){
+            cartItem = new CartItem();
             cartItem.setProduct(product);
             cartItem.setQuantity(quantity);
             cartItem.setUnitPrice(product.getPrice());
+            cartItem.setCart(cart);
+            cart.getItems().add(cartItem);
         } else {
-            cartItem.setQuantity(quantity + cartItem.getQuantity() );
+            // Mettre à jour la quantité si le produit est déjà dans le panier
+           // cartItem.setQuantity(quantity + cartItem.getQuantity() );
+            // Si l'item existe, mettre à jour la quantité
+            cartItem = existingItemOpt.get();
+            cartItem.setQuantity(cartItem.getQuantity() + quantity);
         }
-
         cartItem.setTotalPrice();//update the total price which is equal to qte * unit price
-        cart.addItem(cartItem);
-        cart.setUser(user); //assign to user
-        cartItemRepository.save(cartItem); // persist on db
-        cartRepository.save(cart);// persist on db
+        CartItem savedCartItem = cartItemRepository.save(cartItem);// persist on db
 
+        cart.addItem(savedCartItem);
+        cartRepository.save(cart);// persist on db
     }
 
-    /**
-     * Remove cart item to the cart
-     * @param cartId long
-     * @param productId long
-     */
+
+
+    // Supprimer un item du panier
+    @Transactional
     @Override
-    public void removeItemToCart(Long cartId, Long productId) {
-        Cart cart = cartMapper.toCartEntity(cartService.getCart(cartId)); //get the current cart
-        CartItem itemToRemove =  cartItemMapper.toCartItemEntity(getCartItem(cartId, productId));//get cart's item
-        //   Cart cart = cartMapper.toCartEntity(cartDto);// convert to Entity
-        cart.removeItem(itemToRemove); //drop item from cart
-        cartRepository.save(cart);//persist cart on db
+    public void removeItemFromCart(Long cartId, Long itemId) {
+        CartItem item = cartItemRepository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+
+        if (!item.getCart().getId().equals(cartId)) {
+            throw new IllegalArgumentException("Item does not belong to the given cart");
+        }
+        item.getCart().removeItem(item);
+        cartItemRepository.delete(item);
+
     }
 
     /**

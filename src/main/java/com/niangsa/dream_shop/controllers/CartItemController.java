@@ -6,7 +6,6 @@ import com.niangsa.dream_shop.response.ApiResponse;
 import com.niangsa.dream_shop.service.cart.ICartItemService;
 import com.niangsa.dream_shop.service.cart.ICartService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,9 +39,10 @@ public class CartItemController {
         return ResponseEntity.ok().body(new ApiResponse("Cart item update success! ",null));
     }
 
-    @DeleteMapping("/{cartId}/item/{productId}/product/remove")
-    public  ResponseEntity<ApiResponse> removeItemFrom(@PathVariable Long cartId, @PathVariable Long productId){
-        cartItemService.removeItemToCart(cartId,productId);
+
+    @DeleteMapping("/cart/{cartId}/item/{itemId}/remove")
+    public  ResponseEntity<ApiResponse> removeItem(@PathVariable Long cartId,@PathVariable Long itemId){
+        cartItemService.removeItemFromCart(cartId,itemId);
         return ResponseEntity.ok().body(new ApiResponse("Item delete success !",null));
     }
 }

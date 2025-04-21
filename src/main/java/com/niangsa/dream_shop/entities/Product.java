@@ -17,21 +17,16 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
-    @Column(name = "name")
     private String name;
-    @Column(name = "brand")
     private String brand;
-    @Column(name = "description")
     private String description;
-    @Column(name = "price")
     private BigDecimal price;
-    @Column(name = "inventory")
     private int inventory;
     @ManyToOne()
     @JoinColumn(name = "category_id")
     private Category category;
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Image> images;
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "product",cascade = {CascadeType.DETACH,CascadeType.REMOVE,CascadeType.PERSIST},orphanRemoval = true)
     private List<CartItem> cartItems;
 }
