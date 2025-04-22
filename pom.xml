@@ -30,9 +30,13 @@
 	<properties>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
 		<java.version>17</java.version>
+		<sonar.organization>moallelite</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<dependencies>
-		<!---->
+		<!-- sonarQube cloud -->
+
+		<!--for runnning the app-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
