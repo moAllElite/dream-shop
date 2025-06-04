@@ -14,7 +14,15 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 564642940773-gh4s3e5nlfrpnh6m6msulc2b15ng2lig.apps.googleusercontent.com
+            client-secret: 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
+            scope: openid, profile, email
+            redirect-uri: "http://127.0.0.O:4200/login/oauth2/code/google"
 auth:
   token:
     expirationInMils : 86400000

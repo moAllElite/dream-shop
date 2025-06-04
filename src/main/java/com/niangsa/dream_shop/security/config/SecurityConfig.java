@@ -1,5 +1,4 @@
 package com.niangsa.dream_shop.security.config;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,8 +6,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.http.SessionCreationPolicy; import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -24,8 +22,9 @@ public class SecurityConfig {
 
         private final AuthenticationProvider authenticationProvider;
         private final JwtAuthenFilter authenFilter;
+    //    private final ClientRegistration getRegistration;
 
-        @Bean
+    @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             return http
                     .csrf(AbstractHttpConfigurer::disable)
@@ -50,6 +49,7 @@ public class SecurityConfig {
 //                        // Admin Endpoints
 //                        auth.requestMatchers("/admin/**").hasRole("ADMIN");
 
+                        //social network authentification
                         // Any other request needs authentication
                        auth.anyRequest().authenticated();
                     })
@@ -58,6 +58,7 @@ public class SecurityConfig {
                     .build();
         }
 
+        //cors configuration
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
             CorsConfiguration configuration = new CorsConfiguration();
@@ -70,5 +71,20 @@ public class SecurityConfig {
             source.registerCorsConfiguration("/**", configuration);
             return source;
         }
-    }
+
+        //for social network authentification
+//        private static List<String> clients = List.of("google");
+
+  /*  @Bean
+    public ClientRegistrationRepository clientRegistrationRepository() {
+        List<ClientRegistration> registrations = clients.stream()
+                .map(c -> getRegistration(c))
+                .filter(registration -> registration != null)
+                .collect(Collectors.toList());
+
+        return new InMemoryClientRegistrationRepository(registrations);
+    }*/
+}
+
+
 

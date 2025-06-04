@@ -51,18 +51,11 @@ public class CartItemServiceImpl implements ICartItemService {
         // Récupérer le produit
         Product product = productMapper.toProductEntity( productService.getById(productId));
 
-
         // Rechercher l'item existant dans le cart
         Optional<CartItem> existingItemOpt = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
                 .findFirst();
         CartItem cartItem;
-
-////        CartDto cartDto = cartService.getCart(cart.getId());
-//        //Cart cart = cartMapper.toCartEntity(cartDto);
-//    //    CartItem cartItem = cart.getItems().stream()
-//                .filter(item -> item.getProduct().getId().equals(productId))
-//                .findFirst().orElse(null);
 
         if(existingItemOpt.isEmpty()){
             cartItem = new CartItem();
@@ -72,8 +65,6 @@ public class CartItemServiceImpl implements ICartItemService {
             cartItem.setCart(cart);
             cart.getItems().add(cartItem);
         } else {
-            // Mettre à jour la quantité si le produit est déjà dans le panier
-           // cartItem.setQuantity(quantity + cartItem.getQuantity() );
             // Si l'item existe, mettre à jour la quantité
             cartItem = existingItemOpt.get();
             cartItem.setQuantity(cartItem.getQuantity() + quantity);

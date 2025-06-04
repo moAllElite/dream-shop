@@ -29,11 +29,23 @@
 	</scm>
 	<properties>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<sonar.organization>moallelite</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<dependencies>
+		<!-- OAuth2 & Security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		<!-- OAuth2 & Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-client</artifactId>
+			<version>6.3.4</version>
+		</dependency>
+		<!-- oauth 2 end-->
 		<!-- sonarQube cloud -->
 
 		<!--for runnning the app-->
@@ -170,6 +182,15 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>21</source>
+					<target>21</target>
+					<compilerArgs>--enable-preview</compilerArgs>
 				</configuration>
 			</plugin>
 		</plugins>
