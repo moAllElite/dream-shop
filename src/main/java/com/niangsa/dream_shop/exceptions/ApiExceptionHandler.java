@@ -15,19 +15,22 @@ import java.time.ZonedDateTime;
 public class ApiExceptionHandler {
 
     @ExceptionHandler({EntityNotFoundException.class})
-    public ResponseEntity<Object> handleNoEntityFoundException(EntityNotFoundException e) {
-        ApiException apiException = new ApiException(
-                e.getMessage(),
-                HttpStatus.NOT_FOUND,
-                ZonedDateTime.now(ZoneId.of("Z"))
-        );
+    public ResponseEntity<ApiException> handleNoEntityFoundException(EntityNotFoundException e) {
+        ApiException apiException = ApiException.builder().message(e.getMessage())
+                .httpStatus(HttpStatus.NOT_FOUND)
+                .timestamp(ZonedDateTime.now(ZoneId.of("Z"))).build();
+
         return new ResponseEntity<>(apiException,HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({EntityExistsException.class})
-    public ResponseEntity<Object> handleEntityAlreadyExistException(EntityExistsException e) {
-        ApiException apiException = new ApiException(e.getMessage(),  HttpStatus.CONFLICT, ZonedDateTime.now(ZoneId.of("Z")));
-        return new ResponseEntity<>(apiException,HttpStatus.CONFLICT);
+    public ResponseEntity<ApiException> handleEntityAlreadyExistException(EntityExistsException e) {
+        ApiException apiException = ApiException.builder().message(e.getMessage())
+        .httpStatus(HttpStatus.FOUND).timestamp(ZonedDateTime.now(ZoneId.of("Z"))).build();
+        return new  ResponseEntity<>(
+                apiException,
+               HttpStatus.FOUND
+        );
     }
 
 }
