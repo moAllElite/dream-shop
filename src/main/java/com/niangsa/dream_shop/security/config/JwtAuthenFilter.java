@@ -7,8 +7,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Component
 public class JwtAuthenFilter extends OncePerRequestFilter {
     private final IUserService userService;
@@ -47,8 +47,7 @@ public class JwtAuthenFilter extends OncePerRequestFilter {
                 String username = jwtUtils.getUsernameFromToken(jwtToken);
                 UserDetails userDetails = userService.loadUserByUsername(username);// get user information base on username
                 //check if user exist in db & not connect
-                if (userDetails != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    if (jwtUtils.isTokenValidate(jwtToken, userDetails)) {
+                if (userDetails != null && SecurityContextHolder.getContext().getAuthentication() == null && jwtUtils.isTokenValidate(jwtToken, userDetails)) {
                         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities()
                         );
@@ -56,8 +55,6 @@ public class JwtAuthenFilter extends OncePerRequestFilter {
                         auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(auth);
                     }
-               //     filterChain.doFilter(request, response);
-                }
             }
         }  catch (JwtException e) {
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token, you may login again!");
