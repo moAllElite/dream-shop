@@ -12,14 +12,18 @@ import com.niangsa.dream_shop.security.jwt.IJwtService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-
+@CacheConfig(cacheNames = "user")
 @AllArgsConstructor
 @Service
 public class UserServiceImpl implements IUserService  {
@@ -33,6 +37,8 @@ public class UserServiceImpl implements IUserService  {
      * @param request from Form
      * @return UserDto
      */
+    @Transactional
+    @Cacheable(key = "#email")
     @Override
     public String registerUser( AddUserRequest request) throws EntityExistsException {
         Role role = existingRole(request.role());
@@ -50,8 +56,12 @@ public class UserServiceImpl implements IUserService  {
 
     /**
      * @param request which are contains email & password  from form
+     *  generate a new token in order to authenticate the user
+     *  otherwise the username isn't recognize with throws o
      * @return token
      */
+    @Transactional
+    @Cacheable(key = "#email")
     @Override
     public String getUserAuthenticate( AuthenticationResquest request) throws UsernameNotFoundException , EntityNotFoundException{
         try {
@@ -59,7 +69,7 @@ public class UserServiceImpl implements IUserService  {
             System.out.println(userDetails);
             return jwtService.createToken(userDetails);
         } catch (UsernameNotFoundException | EntityNotFoundException e) {
-            throw new EntityNotFoundException(
+            throw new UsernameNotFoundException(
                     "Email or password is incorrect. Please try again later."
             );
         }
@@ -70,6 +80,8 @@ public class UserServiceImpl implements IUserService  {
      * @param id long
      * @return UserDto
      */
+    @Transactional
+    @CacheEvict(key = "#id")
     @Override
     public UserDto getById(Long id) {
         return userRepository.findById(id)
@@ -79,6 +91,7 @@ public class UserServiceImpl implements IUserService  {
 
     /**
      * @param id long
+     * remove user by id
      */
     @Override
     public void delete(Long id) {

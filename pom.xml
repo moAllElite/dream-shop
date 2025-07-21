@@ -29,11 +29,17 @@
 	</scm>
 	<properties>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 		<sonar.organization>moallelite</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<dependencies>
+		<!-- Records builder -->
+		<dependency>
+			<groupId>io.soabase.record-builder</groupId>
+			<artifactId>record-builder-core</artifactId>
+			<version>47</version>
+		</dependency>
 		<!-- OAuth2 & Security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

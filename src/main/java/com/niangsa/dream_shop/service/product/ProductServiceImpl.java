@@ -9,22 +9,26 @@ import com.niangsa.dream_shop.repositories.ProductRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-
+@CacheConfig(cacheNames = "products")
 @Service
 @AllArgsConstructor
 public class ProductServiceImpl implements IProductService {
-    /**
-     inject repositories & mappers*     */
+    /**inject repositories & mappers*     */
 
     private final ProductRepository productRepository;
     private final   ProductMapper productMapper;
@@ -37,6 +41,7 @@ public class ProductServiceImpl implements IProductService {
      *     2-         if yes set it as new category
      *     3-       if no , then save as new category
      */
+    @Transactional
     @Override
     public Product saveProduct(Product request){
         if(productExists(request.getName(),request.getBrand())){
@@ -52,7 +57,7 @@ public class ProductServiceImpl implements IProductService {
                         }
                 );
        request.setCategory(categoryEntity);
-   //    Product entity= productRepository.save(productMapper.toProductEntity(request));
+
        return productRepository.save(request);
     }
 
@@ -62,6 +67,7 @@ public class ProductServiceImpl implements IProductService {
      * @return ProductDto
      */
 
+    @CachePut(key = "#id")
     @Override
     public ProductDto getById(Long id) {
        return    productRepository.findById(id)
@@ -77,6 +83,8 @@ public class ProductServiceImpl implements IProductService {
      * delete product by id
      * @param id Long
      */
+    @CacheEvict(key = "#id")
+    @Transactional
     @Override
     public void delete(Long id) {
         productRepository.findById(id)
@@ -133,6 +141,7 @@ public class ProductServiceImpl implements IProductService {
      * @param category name
      * @return List of Product
      */
+    @Cacheable(key = "#category")
     @Override
     public List<ProductDto> getProductByCategory(String category) {
         return productRepository.findByCategoryName(category)
@@ -146,6 +155,7 @@ public class ProductServiceImpl implements IProductService {
      * @param category name
      * @return  ProductDto
      */
+    @Cacheable(key = "brand")
     @Override
     public List<ProductDto> getProductByCategoryAndBand(String brand, String category) {
        return productRepository.findProductByBrandAndCategoryName( brand,category)
@@ -159,6 +169,7 @@ public class ProductServiceImpl implements IProductService {
      * @param name string
      * @return List of products
      */
+    @Cacheable(key = "#name")
     @Override
     public ProductDto getProductByName(String name) {
         Product product = productRepository.findByName(name);

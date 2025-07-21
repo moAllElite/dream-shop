@@ -30,7 +30,12 @@ services:
       - mysql-dreamshop-db
     restart: unless-stopped
 
-
+  #redis for caching
+  redis:
+    image: redis:5.0.13-alpine
+    container_name: dream-shop-redis
+    ports:
+      - "6379:6379"
 
 volumes:
   dreamshop_mysql_data:
